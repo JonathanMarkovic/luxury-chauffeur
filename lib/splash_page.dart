@@ -28,16 +28,17 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.darkBackground,
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image(image: AssetImage('assets/luxe-rides-logo')),
+            Image(image: AssetImage('assets/luxe-rides-logo.png')),
             CircularProgressIndicator(
               backgroundColor: AppColors.accentGold,
               valueColor: AlwaysStoppedAnimation(AppColors.accentGoldHover),
-              strokeWidth: 10,
+              strokeWidth: 3,
             )
           ],
         ),
