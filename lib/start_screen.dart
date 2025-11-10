@@ -36,27 +36,31 @@ class _StartScreenState extends State<StartScreen> {
           children: [
             Image(image: AssetImage('assets/luxe-rides-logo.png')),
             SizedBox(height: 50,),
-            Text('Already Have An Account?', style: TextStyle(color: AppColors.lightBackground),),
+            Text('Already Have An Account?', style: TextStyle(color: AppColors.lightBackground, fontSize: 18),),
             ElevatedButton(
               onPressed: () {
 
               },
-              child: Text('Login'),
+              child: Text('Login', style: TextStyle(fontSize: 18),),
               style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(AppColors.lightBackground), // ✅ Correct
-                foregroundColor: WidgetStateProperty.all(AppColors.darkBackground)
+                backgroundColor: WidgetStateProperty.all(AppColors.lightBackground),
+                foregroundColor: WidgetStateProperty.all(AppColors.darkBackground),
+                shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                fixedSize: WidgetStateProperty.all(Size(120, 30))
               ),
             ),
             SizedBox(height: 16,),
-            Text("Don't Have An Account?", style: TextStyle(color: AppColors.lightBackground),),
+            Text("Don't Have An Account?", style: TextStyle(color: AppColors.lightBackground, fontSize: 18),),
             ElevatedButton(
               onPressed: () {
 
               },
-              child: Text('Register'),
+              child: Text('Register', style: TextStyle(fontSize: 18)),
               style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(AppColors.lightBackground), // ✅ Correct
-                foregroundColor: WidgetStateProperty.all(AppColors.darkBackground)
+                backgroundColor: WidgetStateProperty.all(AppColors.lightBackground),
+                foregroundColor: WidgetStateProperty.all(AppColors.darkBackground),
+                shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                fixedSize: WidgetStateProperty.all(Size(120, 30)),
               ),
             )
           ],
