@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
+import 'package:luxury_chauffeur/login_screen.dart';
 
 void main() {
   runApp(MyStartScreenApp());
@@ -39,7 +40,10 @@ class _StartScreenState extends State<StartScreen> {
             Text('Already Have An Account?', style: TextStyle(color: AppColors.lightBackground, fontSize: 18),),
             ElevatedButton(
               onPressed: () {
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen())
+                );
               },
               child: Text('Login', style: TextStyle(fontSize: 18),),
               style: ButtonStyle(
@@ -53,7 +57,10 @@ class _StartScreenState extends State<StartScreen> {
             Text("Don't Have An Account?", style: TextStyle(color: AppColors.lightBackground, fontSize: 18),),
             ElevatedButton(
               onPressed: () {
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterScreen())
+                );
               },
               child: Text('Register', style: TextStyle(fontSize: 18)),
               style: ButtonStyle(
