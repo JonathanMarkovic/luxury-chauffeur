@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:luxury_chauffeur/app_colors.dart';
 
 class CarsScreen extends StatefulWidget {
   const CarsScreen({super.key});
@@ -11,8 +12,10 @@ class _CarsScreenState extends State<CarsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
-        title: Text('Cars'),
+        backgroundColor: AppColors.darkBackground,
+        title: Text('Cars', style: TextStyle(color: AppColors.lightBackground),),
         centerTitle: true,
       ),
       body: Column(
