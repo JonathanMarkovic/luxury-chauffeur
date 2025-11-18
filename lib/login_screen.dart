@@ -48,16 +48,26 @@ class LoginScreen extends StatelessWidget {
                           decoration: InputDecoration(labelText: 'Password'),
                         ),
                         SizedBox(height: 20,),
-                        ElevatedButton(
-                          onPressed: () {
+                        ListTile(
+                          leading: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => RegisterScreen())
+                              );
+                            },
+                            child: Text("Don't Have an Account?")),
+                          trailing: ElevatedButton(
+                            onPressed: () {
 
-                          },
-                          child: Text('Login', style: TextStyle(fontSize: 18),),
-                          style: ButtonStyle(
-                              backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
-                              foregroundColor: WidgetStateProperty.all(AppColors.lightBackground),
-                              shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                              fixedSize: WidgetStateProperty.all(Size(120, 30))
+                            },
+                            child: Text('Login', style: TextStyle(fontSize: 18),),
+                            style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
+                                foregroundColor: WidgetStateProperty.all(AppColors.lightBackground),
+                                shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                                fixedSize: WidgetStateProperty.all(Size(120, 30))
+                            ),
                           ),
                         ),
                       ],
@@ -123,16 +133,27 @@ class RegisterScreen extends StatelessWidget {
                         obscureText: true,
                       ),
                       SizedBox(height: 20,),
-                      ElevatedButton(
-                        onPressed: () {
+                      ListTile(
+                        leading: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => LoginScreen())
+                            );
+                          },
+                          child: Text("Already Have an Account?")
+                        ),
+                        trailing: ElevatedButton(
+                          onPressed: () {
 
-                        },
-                        child: Text('Register', style: TextStyle(fontSize: 18),),
-                        style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
-                            foregroundColor: WidgetStateProperty.all(AppColors.lightBackground),
-                            shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                            fixedSize: WidgetStateProperty.all(Size(120, 30))
+                          },
+                          child: Text('Register', style: TextStyle(fontSize: 18),),
+                          style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
+                              foregroundColor: WidgetStateProperty.all(AppColors.lightBackground),
+                              shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                              fixedSize: WidgetStateProperty.all(Size(120, 30))
+                          ),
                         ),
                       ),
                     ],
