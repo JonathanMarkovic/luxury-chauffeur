@@ -50,6 +50,7 @@ unlinked_spec.ds
 **/android/build.gradle
 **/android/**/gradle-wrapper.jar
 .gradle/
+**/gradle/settings.gradle
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
