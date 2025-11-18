@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "698535253878",
+    "project_id": "lux-rides-6312b",
+    "storage_bucket": "lux-rides-6312b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:698535253878:android:0fdb02348086e33e61cc57",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
