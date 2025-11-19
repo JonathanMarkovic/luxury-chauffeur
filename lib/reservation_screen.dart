@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show TextInputFormatter, FilteringTextInputFormatter;
 import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/start_screen.dart';
 
@@ -49,6 +50,8 @@ class BookScreen extends StatefulWidget {
 }
 
 class _BookScreenState extends State<BookScreen> {
+  String? _selectedVehicle;
+
   final TextEditingController _pickupAddressController = TextEditingController();
   final TextEditingController _pickupCityController = TextEditingController();
   final TextEditingController _pickupPostalCodeController = TextEditingController();
@@ -132,9 +135,57 @@ class _BookScreenState extends State<BookScreen> {
                     )
                 ),
                 SizedBox(height: 20,),
+                Card(
+                  color: AppColors.darkerGray,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                      child: Column(
+                        children: [
+                          Text('Reservation Information'),
+                          TextField(
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                              labelText: 'Number of Guests',
+                            ),
+                          ),
+                          DropdownButtonFormField<String>(
+                            initialValue: _selectedVehicle,
+                            decoration: const InputDecoration(
+                              labelText: 'Select Vehicle',
+                            ),
+
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'Audi',
+                                child: Text('Audi'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Jeep',
+                                child: Text('Jeep'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Range Rover',
+                                child: Text('Range Rover'),
+                              ),
+                            ],
+
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedVehicle = value;
+                              });
+                            },
+                          )
+                        ],
+                      )
+                    )
+                ),
+                SizedBox(height: 20,),
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text('Login', style: TextStyle(fontSize: 18),),
+                  child: Text('Reserve', style: TextStyle(fontSize: 18),),
                   style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
                       foregroundColor: WidgetStateProperty.all(AppColors.lightBackground),
