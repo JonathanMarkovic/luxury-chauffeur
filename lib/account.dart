@@ -1,21 +1,43 @@
 import 'dart:ui';
 import 'package:async/async.dart';
+import 'package:luxury_chauffeur/login_screen.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class Account {
-  late String _id;
-  late String _firstName;
-  late String _lastName;
-  late String _email;
-  late String _phone;
-  late String _password;
+Future<void> main() async {
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+        apiKey: 'AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw',
+        appId: "698535253878",
+        messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
+        projectId: "lux-rides-6312b"
+    )
+  );
+  Account.createAccount('firstName', 'lastName', 'email@email.com', '123 111 4565', 'password123!', 'password123!', 'customer');
+  Account.createAccount('Bob', 'Bobert', 'test@email.com', '321 222 3333', 'password123!', 'password123!', 'customer');
 
-  static final CollectionReference accounts =
-      FirebaseFirestore.instance.collection('accounts');
+  List<Account> accounts = await Account.getAllUsers();
+
+  print(accounts.toString());
+
+  runApp(Testing());
+}
+
+class Account {
+  late String id;
+  late String firstName;
+  late String lastName;
+  late String email;
+  late String phone;
+  late String password;
+  late String role; //Customer, admin, guest
+
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static CollectionReference accountCollection = _firestore.collection(
+      'accounts');
 
   static final namePattern = RegExp(
       r'/^(?=[a-zA-Z\s]{2,25}$)(?=[a-zA-Z\s])(?:([\w\s*?])\1?(?!\1))+$/');
@@ -28,13 +50,16 @@ class Account {
 
   // Checks for a password with min 6 characters 1 uppercase 1 lowercase 1 number
   static final passwordPattern =
-      RegExp(r'/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/');
+  RegExp(r'/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/');
 
-  Account.name(this._id, this._firstName, this._lastName, this._email,
-      this._phone, this._password);
+  Account(
+      {required this.id, required this.firstName, required this.lastName, required this.email,
+        required this.phone, required this.password, required this.role});
 
-  Future<bool> createAccount(String firstName, String lastName, String email,
-      String phone, String password, String confirmPassword) async {
+  static Future<bool> createAccount(String firstName, String lastName,
+      String email,
+      String phone, String password, String confirmPassword,
+      String role) async {
     if (firstName.isNotEmpty && lastName.isNotEmpty) {
       if (!namePattern.hasMatch(firstName) || !namePattern.hasMatch(lastName)) {
         return false;
@@ -55,70 +80,87 @@ class Account {
       }
     }
 // Should hash the passwords here
-    await accounts.add({
+    await accountCollection.add({
       'firstname': firstName,
       'lastName': lastName,
       'email': email,
       'phone': phone,
-      'password': password
+      'password': password,
+      'role': role
     });
 
     return true;
   }
 
+  /**
+   * Fetches the list of all users and their information
+   */
+  static Future<List<Account>> getAllUsers() async {
+    QuerySnapshot querySnapshot = await accountCollection.get();
+    List<Account> accounts = [];
+    for (var doc in querySnapshot.docs) {
+      print(doc.data());
+      accounts.add(Account(
+          id: doc.id,
+          firstName: doc['firstName'],
+          lastName: doc['lastName'],
+          email: doc['email'],
+          phone: doc['phone'],
+          password: doc['password'],
+          role: doc['role'])
+      );
+    }
+
+    return accounts;
+  }
+}
   // Future<bool> login(String email, String password) async {}
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Account &&
-          runtimeType == other.runtimeType &&
-          _firstName == other._firstName &&
-          _lastName == other._lastName &&
-          _email == other._email &&
-          _phone == other._phone &&
-          _password == other._password;
+class Testing extends StatelessWidget {
+  const Testing({super.key});
 
   @override
-  int get hashCode =>
-      _firstName.hashCode ^
-      _lastName.hashCode ^
-      _email.hashCode ^
-      _phone.hashCode ^
-      _password.hashCode;
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: TestDB(),
+    );
+  }
+}
+
+class TestDB extends StatefulWidget {
+  const TestDB({super.key});
 
   @override
-  String toString() {
-    return 'Account{_firstName: $_firstName, _lastName: $_lastName, _email: $_email, _phone: $_phone}';
-  }
+  State<TestDB> createState() => _TestDBState();
+}
 
-  String get phone => _phone;
-
-  String get email => _email;
-
-  String get lastName => _lastName;
-
-  String get firstName => _firstName;
-
-  String get password => _password;
-
-  set password(String value) {
-    _password = value;
-  }
-
-  set phone(String value) {
-    _phone = value;
-  }
-
-  set email(String value) {
-    _email = value;
-  }
-
-  set lastName(String value) {
-    _lastName = value;
-  }
-
-  set firstName(String value) {
-    _firstName = value;
+class _TestDBState extends State<TestDB> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('test'),),
+      body: Center(
+        child: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: Account.accountCollection.snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return Text("Loading");
+                  return ListView(
+                    children: snapshot.data!.docs.map((doc) {
+                      return ListTile(
+                        title: Text('${doc["firstName"]} + " " + ${doc["lastName"]}'),
+                        subtitle: Text("email: ${doc["email"]}"),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
