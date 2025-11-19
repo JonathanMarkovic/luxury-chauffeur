@@ -57,11 +57,17 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text('Logout', style: TextStyle(fontSize: 18, color: AppColors.darkBackground),),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Logout ', style: TextStyle(fontSize: 18, color: AppColors.darkBackground),),
+                      Icon(Icons.logout, color: AppColors.darkBackground,)
+                    ],
+                  ),
                   style: ButtonStyle(
                     shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                     fixedSize: WidgetStateProperty.all(Size(120, 30)),
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
                   ),
                 ),
               ],
