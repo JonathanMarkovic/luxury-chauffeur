@@ -1,6 +1,32 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+//Imports for our custom classes
+import 'package:luxury_chauffeur/splash_page.dart';
+import 'package:luxury_chauffeur/app_colors.dart';
+import 'package:luxury_chauffeur/cars_screen.dart';
+import 'package:luxury_chauffeur/firestore_variables.dart';
+import 'package:luxury_chauffeur/login_screen.dart';
+import 'package:luxury_chauffeur/navigation_bar.dart';
+import 'package:luxury_chauffeur/notification_screen.dart';
+import 'package:luxury_chauffeur/reservation_screen.dart';
+import 'package:luxury_chauffeur/start_screen.dart';
+
+import 'account_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+        apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
+        appId: "698535253878",
+        messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
+        projectId: "lux-rides-6312b"
+    )
+  );
   runApp(const MyApp());
 }
 
@@ -11,26 +37,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo ',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      initialRoute: '/splash',
+      routes: {
+        '/splash' : (context) => SplashPage(),
+        '/start_screen' : (context) => StartScreen(),
+        'reservation_screen' : (context) => ReservationScreen(),
+        '/notification_screen' : (context) => NotificationScreen(),
+        '/login_screen' : (context) => LoginScreen(),
+        '/cars_screen' : (context) => CarsScreen(),
+        '/account_screen' : (context) => AccountScreen()
+      },
       home: const MyHomePage(title: 'Flutter Demo Home Page Testing1 Testing2 Testing3'),
     );
   }

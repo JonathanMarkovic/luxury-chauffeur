@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
+import 'package:luxury_chauffeur/login_screen.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: AccountScreen(),
+    );
+  }
+}
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
