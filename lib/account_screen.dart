@@ -26,7 +26,7 @@ class _AccountScreenState extends State<AccountScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Card(
-                  color: AppColors.accentGrayHover,
+                  color: Colors.white,
                   child: Column(
                     children: [
                       ListTile(
@@ -57,11 +57,11 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {},
-                  child: Text('Logout', style: TextStyle(fontSize: 18, color: Colors.black),),
+                  child: Text('Logout', style: TextStyle(fontSize: 18, color: AppColors.darkBackground),),
                   style: ButtonStyle(
                     shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                     fixedSize: WidgetStateProperty.all(Size(120, 30)),
-                    backgroundColor: MaterialStateProperty.all<Color>(AppColors.accentGrayHover),
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
                   ),
                 ),
               ],

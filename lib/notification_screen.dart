@@ -24,53 +24,61 @@ class _NotificationScreenState extends State<NotificationScreen> {
             child:
             Column(
               children: [
-                ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                Card(
+                  child: ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
                     trailing: Column(
                       children: [
                         IconButton(
                             onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                            icon: Icon(Icons.expand_more, color: Colors.black,)
                         ),
                       ],
                     ),
+                  ),
                 ),
-                ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                Card(
+                  child: ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
                     trailing: Column(
                       children: [
                         IconButton(
                             onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                            icon: Icon(Icons.expand_more, color: Colors.black,)
                         ),
                       ],
-                    )
+                    ),
+                  ),
                 ),
-                ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                Card(
+                  child: ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
                     trailing: Column(
                       children: [
                         IconButton(
                             onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                            icon: Icon(Icons.expand_more, color: Colors.black,)
                         ),
                       ],
-                    )
+                    ),
+                  ),
                 ),
-                ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                Card(
+                  child: ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
                     trailing: Column(
                       children: [
                         IconButton(
                             onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                            icon: Icon(Icons.expand_more, color: Colors.black,)
                         ),
                       ],
-                    )
+                    ),
+                  ),
                 ),
               ],
             )
