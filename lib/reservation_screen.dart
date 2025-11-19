@@ -335,6 +335,7 @@ class _ViewScreenState extends State<ViewScreen> {
           child: Column(
             children: [
               ListTile(
+                // I can't remember if firebase automatically gives a list tile
               )
             ],
           ),
