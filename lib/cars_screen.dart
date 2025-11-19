@@ -25,6 +25,7 @@ class _CarsScreenState extends State<CarsScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Card(
+                color: AppColors.accentGrayHover,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -36,6 +37,7 @@ class _CarsScreenState extends State<CarsScreen> {
                 ),
               ),
               Card(
+                color: AppColors.accentGrayHover,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -48,6 +50,7 @@ class _CarsScreenState extends State<CarsScreen> {
                 ),
               ),
               Card(
+                color: AppColors.accentGrayHover,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
