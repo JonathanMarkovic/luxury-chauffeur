@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show TextInputFormatter, FilteringTextInputFormatter;
 import 'package:luxury_chauffeur/app_colors.dart';
-import 'package:luxury_chauffeur/start_screen.dart';
 
 class ReservationScreen extends StatefulWidget {
   const ReservationScreen({super.key});
@@ -17,6 +15,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       initialIndex: 1,
       length: 3,
       child: Scaffold(
+        backgroundColor: AppColors.darkBackground,
         appBar: AppBar(
           backgroundColor: AppColors.darkBackground,
           centerTitle: true,
@@ -50,13 +49,21 @@ class BookScreen extends StatefulWidget {
 }
 
 class _BookScreenState extends State<BookScreen> {
-  String? _selectedVehicle;
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
+  int _guestCount = 1;
 
+  // Dropdown
+  String? _selectedVehicle;
+  final List<String> carOptions = ["Audi", "Jeep", "Range Rover"];
+
+  // Pickup controllers
   final TextEditingController _pickupAddressController = TextEditingController();
   final TextEditingController _pickupCityController = TextEditingController();
   final TextEditingController _pickupPostalCodeController = TextEditingController();
   final TextEditingController _pickupProvinceController = TextEditingController();
 
+  // Dropoff controllers
   final TextEditingController _dropoffAddressController = TextEditingController();
   final TextEditingController _dropoffCityController = TextEditingController();
   final TextEditingController _dropoffPostalCodeController = TextEditingController();
@@ -65,139 +72,249 @@ class _BookScreenState extends State<BookScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-          padding: EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                DatePickerDialog(firstDate: DateTime.now(), lastDate: DateTime(DateTime.now().year + 1, DateTime.now().month, DateTime.now().day)),
-                TimePickerDialog(initialTime: TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute)),
-                SizedBox(height: 20,),
-                Card(
-                  color: AppColors.darkerGray,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 24
-                    ),
-                    child: Column(
-                      children: [
-                        Text('Pickup Location'),
-                        TextField(
-                          controller: _pickupAddressController,
-                          decoration: InputDecoration(labelText: 'Address'),
-                        ),
-                        TextField(
-                          controller: _pickupCityController,
-                          decoration: InputDecoration(labelText: 'City'),
-                        ),
-                        TextField(
-                          controller: _pickupPostalCodeController,
-                          decoration: InputDecoration(labelText: 'Postal Code'),
-                        ),
-                        TextField(
-                          controller: _pickupProvinceController,
-                          decoration: InputDecoration(labelText: 'Province'),
-                        ),
-                      ],
-                    ),
-                  )
+      backgroundColor: AppColors.darkBackground,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Pickup location
+              _buildSectionLabel("Pickup Location"),
+              _buildInputBox(
+                child: Column(
+                  children: [
+                    _input("Address", _pickupAddressController),
+                    _input("City", _pickupCityController),
+                    _input("Postal Code", _pickupPostalCodeController),
+                    _input("Province", _pickupProvinceController),
+                  ],
                 ),
-                SizedBox(height: 20,),
-                Card(
-                  color: AppColors.darkerGray,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 24
-                      ),
-                      child: Column(
-                        children: [
-                          Text('Dropoff Location'),
-                          TextField(
-                            controller: _dropoffAddressController,
-                            decoration: InputDecoration(labelText: 'Address'),
-                          ),
-                          TextField(
-                            controller: _dropoffCityController,
-                            decoration: InputDecoration(labelText: 'City'),
-                          ),
-                          TextField(
-                            controller: _dropoffPostalCodeController,
-                            decoration: InputDecoration(labelText: 'Postal Code'),
-                          ),
-                          TextField(
-                            controller: _dropoffProvinceController,
-                            decoration: InputDecoration(labelText: 'Province'),
-                          ),
-                        ],
-                      ),
-                    )
-                ),
-                SizedBox(height: 20,),
-                Card(
-                  color: AppColors.darkerGray,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                      child: Column(
-                        children: [
-                          Text('Reservation Information'),
-                          TextField(
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            decoration: InputDecoration(
-                              labelText: 'Number of Guests',
-                            ),
-                          ),
-                          DropdownButtonFormField<String>(
-                            initialValue: _selectedVehicle,
-                            decoration: const InputDecoration(
-                              labelText: 'Select Vehicle',
-                            ),
+              ),
 
-                            items: const [
-                              DropdownMenuItem(
-                                value: 'Audi',
-                                child: Text('Audi'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Jeep',
-                                child: Text('Jeep'),
-                              ),
-                              DropdownMenuItem(
-                                value: 'Range Rover',
-                                child: Text('Range Rover'),
-                              ),
-                            ],
+              const SizedBox(height: 20),
 
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedVehicle = value;
-                              });
-                            },
-                          )
-                        ],
-                      )
-                    )
+              // Dropoff location
+              _buildSectionLabel("Dropoff Location"),
+              _buildInputBox(
+                child: Column(
+                  children: [
+                    _input("Address", _dropoffAddressController),
+                    _input("City", _dropoffCityController),
+                    _input("Postal Code", _dropoffPostalCodeController),
+                    _input("Province", _dropoffProvinceController),
+                  ],
                 ),
-                SizedBox(height: 20,),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text('Reserve', style: TextStyle(fontSize: 18),),
-                  style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
-                      foregroundColor: WidgetStateProperty.all(AppColors.lightBackground),
-                      shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                      fixedSize: WidgetStateProperty.all(Size(120, 30))
+              ),
+
+              const SizedBox(height: 28),
+
+              _buildSectionLabel("Select a date"),
+              GestureDetector(
+                onTap: _pickDate,
+                child: _buildInputBox(
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_month, color: AppColors.accentGoldHover),
+                      const SizedBox(width: 12),
+                      Text(
+                        "${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}",
+                        style: const TextStyle(color: AppColors.darkBackground),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          )
+              ),
+
+              const SizedBox(height: 20),
+
+              _buildSectionLabel("Select a time"),
+              GestureDetector(
+                onTap: _pickTime,
+                child: _buildInputBox(
+                  child: Row(
+                    children: [
+                      Icon(Icons.access_time, color: AppColors.accentGoldHover),
+                      const SizedBox(width: 12),
+                      Text(
+                        _selectedTime.format(context),
+                        style: const TextStyle(color: AppColors.darkBackground),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Car dropdown
+              _buildSectionLabel("Vehicle"),
+              _buildInputBox(
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    dropdownColor: Colors.white,
+                    iconEnabledColor: AppColors.accentGoldHover,
+                    style: const TextStyle(color: AppColors.darkBackground),
+                    hint: const Text("Select a car"),
+                    value: _selectedVehicle,
+                    items: carOptions
+                      .map((car) => DropdownMenuItem(
+                        value: car,
+                        child: Text(car),
+                      ))
+                        .toList(),
+                      onChanged: (value) {
+                        setState(() => _selectedVehicle = value);
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Guest counter
+              _buildSectionLabel("Guests"),
+              _buildInputBox(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _counterButton(
+                      icon: Icons.remove,
+                      onPressed: () {
+                        setState(() {
+                          if (_guestCount > 1) _guestCount--;
+                        });
+                      },
+                    ),
+                    Text(
+                      "$_guestCount Guest${_guestCount > 1 ? 's' : ''}",
+                      style: const TextStyle(color: AppColors.darkBackground, fontSize: 16),
+                    ),
+                    _counterButton(
+                      icon: Icons.add,
+                      onPressed: () {
+                        setState(() => _guestCount++);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // Cancel and reserve buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: AppColors.accentGoldHover),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () {},
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          color: AppColors.accentGoldHover,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accentGoldHover,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      onPressed: () {},
+                      child: const Text("Reserve", style: TextStyle(fontSize: 18)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      )
+    );
+  }
+
+  // Helper widgets
+  Widget _input(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(
+        controller: controller,
+        style: const TextStyle(color: AppColors.darkBackground),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: AppColors.darkBackground),
+        ),
       ),
     );
+  }
+
+  Widget _counterButton({required IconData icon, required VoidCallback onPressed}) {
+    return Container(
+      child: IconButton(
+        icon: Icon(icon, color: AppColors.accentGoldHover),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+  Widget _buildSectionLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: AppColors.accentGoldHover,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputBox({required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: child,
+    );
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 1),
+      initialDate: _selectedDate,
+    );
+
+    if (picked != null) setState(() => _selectedDate = picked);
+  }
+
+  Future<void> _pickTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+    );
+
+    if (picked != null) setState(() => _selectedTime = picked);
   }
 }
 
@@ -212,7 +329,17 @@ class _ViewScreenState extends State<ViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              ListTile(
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
