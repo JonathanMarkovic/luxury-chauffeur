@@ -14,60 +14,67 @@ class _NotificationScreenState extends State<NotificationScreen> {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
+        backgroundColor: AppColors.darkBackground,
         centerTitle: true,
-        title: Text('Notifications'),
+        title: Text('Notifications', style: TextStyle(color: Colors.white, fontSize: 30),),
       ),
-      body: Column(
-        children: [
-          ListTile(
-              title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-              subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
-              trailing: Column(
-                children: [
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.expand_more, color: Colors.white,)
-                  ),
-                ],
-              )
-          ),
-          ListTile(
-              title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-              subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
-              trailing: Column(
-                children: [
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.expand_more, color: Colors.white,)
-                  ),
-                ],
-              )
-          ),
-          ListTile(
-              title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-              subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
-              trailing: Column(
-                children: [
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.expand_more, color: Colors.white,)
-                  ),
-                ],
-              )
-          ),
-          ListTile(
-              title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
-              subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
-              trailing: Column(
-                children: [
-                  IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.expand_more, color: Colors.white,)
-                  ),
-                ],
-              )
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Padding(
+            padding: EdgeInsets.all(20),
+            child:
+            Column(
+              children: [
+                ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                    trailing: Column(
+                      children: [
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                        ),
+                      ],
+                    )
+                ),
+                ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                    trailing: Column(
+                      children: [
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                        ),
+                      ],
+                    )
+                ),
+                ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                    trailing: Column(
+                      children: [
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                        ),
+                      ],
+                    )
+                ),
+                ListTile(
+                    title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
+                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.lightBackground),),
+                    trailing: Column(
+                      children: [
+                        IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.expand_more, color: Colors.white,)
+                        ),
+                      ],
+                    )
+                ),
+              ],
+            )
+        ),
       )
     );
   }

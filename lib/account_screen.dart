@@ -14,57 +14,61 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
-        title: Text('Account'),
+        backgroundColor: AppColors.darkBackground,
         centerTitle: true,
+        title: Text('Account', style: TextStyle(color: Colors.white, fontSize: 30),),
       ),
-      body: Column(
-        children: [
-          ListTile(
-            trailing: ElevatedButton(
-              onPressed: () {},
-              child: Text('Logout', style: TextStyle(fontSize: 18),),
-              style: ButtonStyle(
-                  shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                  fixedSize: WidgetStateProperty.all(Size(120, 30))
-              ),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: Text('Personal Information', style: TextStyle(fontSize: 25),),
-                      trailing: TextButton(
-                        onPressed: () {},
-                        child: Text('Edit', style: TextStyle(fontSize: 18),),
+      body: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Card(
+                  color: AppColors.accentGrayHover,
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text('Personal Information', style: TextStyle(fontSize: 22),),
+                        trailing: TextButton(
+                          onPressed: () {},
+                          child: Text('Edit', style: TextStyle(fontSize: 18),),
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      title: Text('First Name'),
-                      trailing: Text('Get from database'),
-                    ),
-                    ListTile(
-                      title: Text('Last Name'),
-                      trailing: Text('Get from database'),
-                    ),
-                    ListTile(
-                      title: Text('Email'),
-                      trailing: Text('Get from database'),
-                    ),
-                    ListTile(
-                      title: Text('Phone Number'),
-                      trailing: Text('Get from database'),
-                    )
-                  ],
+                      ListTile(
+                        title: Text('First Name'),
+                        trailing: Text('Get from database'),
+                      ),
+                      ListTile(
+                        title: Text('Last Name'),
+                        trailing: Text('Get from database'),
+                      ),
+                      ListTile(
+                        title: Text('Email'),
+                        trailing: Text('Get from database'),
+                      ),
+                      ListTile(
+                        title: Text('Phone Number'),
+                        trailing: Text('Get from database'),
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
-          )
-        ],
-      ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Logout', style: TextStyle(fontSize: 18, color: Colors.black),),
+                  style: ButtonStyle(
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    fixedSize: WidgetStateProperty.all(Size(120, 30)),
+                    backgroundColor: MaterialStateProperty.all<Color>(AppColors.accentGrayHover),
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      )
     );
   }
 }

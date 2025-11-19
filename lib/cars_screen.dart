@@ -15,48 +15,53 @@ class _CarsScreenState extends State<CarsScreen> {
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
         backgroundColor: AppColors.darkBackground,
-        title: Text('Cars', style: TextStyle(color: AppColors.lightBackground),),
+        title: Text('Cars', style: TextStyle(color: Colors.white, fontSize: 30),),
         centerTitle: true,
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Image(image: AssetImage('jeep.jpg')),
-                ListTile(
-                  title: Text('Jeep'),
-                  trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
-                )              ],
-            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Card(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Image(image: AssetImage('assets/jeep.jpg')),
+                    ListTile(
+                      title: Text('Jeep'),
+                      trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
+                    )              ],
+                ),
+              ),
+              Card(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Image(image: AssetImage('assets/audi.jpg')),
+                    ListTile(
+                      title: Text('Audi'),
+                      trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
+                    )
+                  ],
+                ),
+              ),
+              Card(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Image(image: AssetImage('assets/range_rover.jpg')),
+                    ListTile(
+                      title: Text('Range Rover'),
+                      trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
+                    )              ],
+                ),
+              )
+            ],
           ),
-          Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Image(image: AssetImage('audi.jpg')),
-                ListTile(
-                  title: Text('Audi'),
-                  trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
-                )
-              ],
-            ),
-          ),
-          Card(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Image(image: AssetImage('range_rover.jpg')),
-                ListTile(
-                  title: Text('Range Rover'),
-                  trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
-                )              ],
-            ),
-          )
-        ],
-      ),
+        ),
+      )
     );
   }
 }

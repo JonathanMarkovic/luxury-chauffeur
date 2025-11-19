@@ -19,7 +19,7 @@ def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "
 android {
     namespace = "com.example.luxury_chauffeur"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersiongit
+    ndkVersion = flutter.ndkVersion
 
     defaultConfig {
         applicationId = "com.example.luxury_chauffeur"
