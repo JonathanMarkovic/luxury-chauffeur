@@ -34,7 +34,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             icon: Icon(Icons.expand_more, color: Colors.white,)
                         ),
                       ],
-                    )
+                    ),
                 ),
                 ListTile(
                     title: Text('Title Placeholder', style: TextStyle(color: Colors.white),),
