@@ -95,7 +95,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Future<void> updateAccount(String id, String newFirstName, String newLastName,
       String newEmail, String newPhone, String newRole) async {
     if (FirestoreVariables.isValidName(firstName) && FirestoreVariables.isValidName(lastName)
-    && FirestoreVariables.isValidEmail(email) && FirestoreVariables.isValidPhone(phone)
+    && await FirestoreVariables.isValidEmail(email) && FirestoreVariables.isValidPhone(phone)
     && FirestoreVariables.isValidRole(role)) {
       await FirestoreVariables.accountCollection.doc(id).update(
           {'firstName': newFirstName, 'lastName': newLastName, 'email': newEmail,

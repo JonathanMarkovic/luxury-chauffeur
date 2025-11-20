@@ -1,8 +1,20 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/main.dart';
 
-void main() {
+import 'firestore_variables.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
+          appId: "698535253878",
+          messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
+          projectId: "lux-rides-6312b"
+      )
+  );
   runApp(App());
 }
 
@@ -83,9 +95,45 @@ class LoginScreen extends StatelessWidget {
 
 
 class RegisterScreen extends StatelessWidget {
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController roleController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  ///Adds an account to the database
+  Future<bool> addAccount() async {
+    // Test Code
+    // print('///////////////////////////////////////////////////////////');
+    // print(FirestoreVariables.isValidName(firstNameController.text));
+    // print(FirestoreVariables.isValidName(lastNameController.text));
+    // print(await FirestoreVariables.isValidEmail(emailController.text));
+    // print(FirestoreVariables.isValidPhone(phoneController.text));
+    // // print(FirestoreVariables.isValidRole(roleController.text));
+    // print(FirestoreVariables.isValidPassword(passwordController.text, confirmPasswordController.text));
+    // print('///////////////////////////////////////////////////////////');
+    
+    if (FirestoreVariables.isValidName(firstNameController.text)
+        && FirestoreVariables.isValidName(lastNameController.text)
+        && await FirestoreVariables.isValidEmail(emailController.text)
+        && FirestoreVariables.isValidPhone(phoneController.text)
+        && FirestoreVariables.isValidPassword(passwordController.text, confirmPasswordController.text)
+        /* && FirestoreVariables.isValidRole(roleController.text)*/) {
+      Future.delayed(Duration(seconds: 5));
+      await FirestoreVariables.accountCollection.add(
+          {'firstName': firstNameController.text.trim(),
+            'lastName': lastNameController.text.trim(),
+            'email': emailController.text.toLowerCase().trim(),
+            'phone': phoneController.text.trim(),
+            'password': passwordController.text.trim(),
+            /*'role': roleController.text.trim()*/});
+      print("adding account");
+      return true;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,11 +154,11 @@ class RegisterScreen extends StatelessWidget {
                       Text('Registration', style: TextStyle(fontSize: 24)),
                       SizedBox(height: 20,),
                       TextField(
-                        controller: nameController,
+                        controller: firstNameController,
                         decoration: InputDecoration(labelText: 'First Name'),
                       ),
                       TextField(
-                        controller: nameController,
+                        controller: lastNameController,
                         decoration: InputDecoration(labelText: 'Last Name'),
                       ),
                       TextField(
@@ -118,7 +166,7 @@ class RegisterScreen extends StatelessWidget {
                         decoration: InputDecoration(labelText: 'Email'),
                       ),
                       TextField(
-                        controller: emailController,
+                        controller: phoneController,
                         decoration: InputDecoration(labelText: 'Phone Number'),
                       ),
                       TextField(
@@ -127,13 +175,26 @@ class RegisterScreen extends StatelessWidget {
                         obscureText: true,
                       ),
                       TextField(
-                        controller: passwordController,
+                        controller: confirmPasswordController,
                         decoration: InputDecoration(labelText: 'Confirm Password'),
                         obscureText: true,
                       ),
                       SizedBox(height: 20,),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          bool complete = await addAccount();
+                          if (complete) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginScreen())
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Invalid Input"))
+                            );
+                          }
+                        },
                         child: Text('Register', style: TextStyle(fontSize: 18),),
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),

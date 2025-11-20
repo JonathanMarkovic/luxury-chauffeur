@@ -22,24 +22,22 @@ class FirestoreVariables {
 
   //Regex for firestore data
   static final namePattern = RegExp(
-      r'/^(?=[a-zA-Z\s]{2,25}$)(?=[a-zA-Z\s])(?:([\w\s*?])\1?(?!\1))+$/');
+      r'^(?=[a-zA-Z\s]{2,25}$)(?=[a-zA-Z\s])(?:([\w\s*?])\1?(?!\1))+$');
   static final emailPattern = RegExp(
-      r'/^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/');
+      r'^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$');
 
   // Checks for most valid phone numbers
   static final phonePattern = RegExp(
-      r'/(?:([+]\d{1,4})[-.\s]?)?(?:[(](\d{1,3})[)][-.\s]?)?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})/');
+      r'(?:([+]\d{1,4})[-.\s]?)?(?:[(](\d{1,3})[)][-.\s]?)?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})');
 
   // Checks for a password with min 6 characters 1 uppercase 1 lowercase 1 number
   static final passwordPattern =
-  RegExp(r'/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/');
+  RegExp(r'^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$');
 
 
-  /**
-   * Checks if the given phone number is valid
-   * Number should be typed with no special characters and spaces in between sections
-   * ex: 514 123 1234
-   */
+  /// Checks if the given phone number is valid
+  /// Number should be typed with no special characters and spaces in between sections
+  /// ex: 514 123 1234
   static bool isValidPhone(String phone) {
     if (phone.isNotEmpty) {
       if (phonePattern.hasMatch(phone)) {
@@ -49,23 +47,37 @@ class FirestoreVariables {
     return false;
   }
 
-  /**
-   * Checks if the given email is valid
-   */
-  static bool isValidEmail(String email) {
+  /// Checks if the given email is valid
+  /// Cannot have repeating emails
+  /// emails must be in the format: email@site.com
+  static Future<bool> isValidEmail(String email) async {
     if (email.isNotEmpty) {
       if (emailPattern.hasMatch(email)) {
-        return true;
+        email = email.toLowerCase();
+        try {
+          final QuerySnapshot querySnapshot = await FirestoreVariables
+              .accountCollection
+              .where('email', isEqualTo: email).limit(1).get();
+          // print('////////////////////////////////////////////////////////');
+          // print(querySnapshot);
+          // print('////////////////////////////////////////////////////////');
+
+          if (querySnapshot.docs.isNotEmpty) {
+            return false;
+          } else {
+            return true;
+          }
+        } catch (e) {
+          print("Error: $e");
+          return false;
+        }
       }
     }
-
     return false;
   }
 
-  /**
-   * Checks for a valid password by comparing with the regex
-   * Also checks if the password matches the password confirmation
-   */
+  /// Checks for a valid password by comparing with the regex
+  /// Also checks if the password matches the password confirmation
   static bool isValidPassword(String password, String confirmPassword) {
     if (password.isNotEmpty && confirmPassword.isNotEmpty) {
       if (!passwordPattern.hasMatch(password)) {
@@ -79,9 +91,7 @@ class FirestoreVariables {
     return true;
   }
 
-  /**
-   * Checks if the given name is valid
-   */
+  /// Checks if the given name is valid
   static bool isValidName(String name) {
     if (name.isNotEmpty) {
       if (!namePattern.hasMatch(name)) {
@@ -92,9 +102,7 @@ class FirestoreVariables {
     return false;
   }
 
-  /**
-   * Checks if the given role is valid
-   */
+  /// Checks if the given role is valid
   static bool isValidRole(String role) {
     if (role.isNotEmpty) {
       if (role.toLowerCase() == 'customer' || role.toLowerCase() == 'admin') {
