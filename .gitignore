@@ -122,3 +122,4 @@ app.*.symbols
 !/dev/ci/**/Gemfile.lock
 .idea/libraries/Dart_Packages.xml
 .idea/libraries/Flutter_Plugins.xml
+.idea/misc.xml
