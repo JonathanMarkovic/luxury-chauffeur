@@ -40,17 +40,23 @@ class Account {
       'accounts');
 
   static final namePattern = RegExp(
-      r'/^(?=[a-zA-Z\s]{2,25}$)(?=[a-zA-Z\s])(?:([\w\s*?])\1?(?!\1))+$/');
+      r"^(?=.{2,25}$)[A-Za-z]+([-'][A-Za-z]+)*(?: [A-Za-z]+([-'][A-Za-z]+)*){0,2}$"
+  );
+
   static final emailPattern = RegExp(
-      r'/^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$/');
+      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+  );
+
 
   // Checks for most valid phone numbers
   static final phonePattern = RegExp(
-      r'/(?:([+]\d{1,4})[-.\s]?)?(?:[(](\d{1,3})[)][-.\s]?)?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})/');
+      r'(?:([+]\d{1,4})[-.\s]?)?(?:[(](\d{1,3})[)][-.\s]?)?(\d{1,4})[-.\s]?(\d{1,4})[-.\s]?(\d{1,9})'
+  );
 
   // Checks for a password with min 6 characters 1 uppercase 1 lowercase 1 number
-  static final passwordPattern =
-  RegExp(r'/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/');
+  static final passwordPattern = RegExp(
+      r'^(?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9])\S{6,}$'
+  );
 
   Account(
       {required this.id, required this.firstName, required this.lastName, required this.email,
@@ -73,17 +79,19 @@ class Account {
     }
 
     if (password.isNotEmpty && confirmPassword.isNotEmpty) {
-      if (!passwordPattern.hasMatch(password)) {
+      email = email.toLowerCase().trim();
+      if (!emailPattern.hasMatch(email)) {
         return false;
-      } else if (password.compareTo(confirmPassword) != 0) {
+      }
+      else if (password.compareTo(confirmPassword) != 0) {
         return false;
       }
     }
 // Should hash the passwords here
     await accountCollection.add({
-      'firstname': firstName,
+      'firstName': firstName,
       'lastName': lastName,
-      'email': email,
+      'email': email.toLowerCase().trim(),
       'phone': phone,
       'password': password,
       'role': role
@@ -150,7 +158,7 @@ class _TestDBState extends State<TestDB> {
                   return ListView(
                     children: snapshot.data!.docs.map((doc) {
                       return ListTile(
-                        title: Text('${doc["firstName"]} + " " + ${doc["lastName"]}'),
+                        title: Text('${doc["firstName"]} ${doc["lastName"]}'),
                         subtitle: Text("email: ${doc["email"]}"),
                       );
                     }).toList(),

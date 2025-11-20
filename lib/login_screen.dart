@@ -161,7 +161,7 @@ class RegisterScreen extends StatelessWidget {
   final TextEditingController confirmPasswordController = TextEditingController();
 
   ///Adds an account to the database
-  Future<bool> addAccount() async {
+  Future<String?> addAccount() async {
     // Test Code
     // print('///////////////////////////////////////////////////////////');
     // print(FirestoreVariables.isValidName(firstNameController.text));
@@ -172,24 +172,44 @@ class RegisterScreen extends StatelessWidget {
     // print(FirestoreVariables.isValidPassword(passwordController.text, confirmPasswordController.text));
     // print('///////////////////////////////////////////////////////////');
 
-    if (FirestoreVariables.isValidName(firstNameController.text)
-        && FirestoreVariables.isValidName(lastNameController.text)
-        && await FirestoreVariables.isValidEmail(emailController.text)
-        && FirestoreVariables.isValidPhone(phoneController.text)
-        && FirestoreVariables.isValidPassword(passwordController.text, confirmPasswordController.text)
-        /* && FirestoreVariables.isValidRole(roleController.text)*/) {
-      Future.delayed(Duration(seconds: 5));
-      await FirestoreVariables.accountCollection.add(
-          {'firstName': firstNameController.text.trim(),
-            'lastName': lastNameController.text.trim(),
-            'email': emailController.text.toLowerCase().trim(),
-            'phone': phoneController.text.trim(),
-            'password': passwordController.text.trim(),
-            /*'role': roleController.text.trim()*/});
-      print("adding account");
-      return true;
+    // Trim values before validating
+    final first = firstNameController.text.trim();
+    final last = lastNameController.text.trim();
+    final email = emailController.text.toLowerCase().trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+    /*'role': roleController.text.trim()*/
+
+    // Validation
+    if (!FirestoreVariables.isValidName(firstNameController.text)) {
+      return 'Please enter a valid first name.';
     }
-    return false;
+    if (!FirestoreVariables.isValidName(lastNameController.text)) {
+      return 'Please enter a valid last name.';
+    }
+    if (!await FirestoreVariables.isValidEmail(emailController.text)) {
+      return 'Email is invalid or already registered.';
+    }
+    if (!FirestoreVariables.isValidPhone(phoneController.text)) {
+      return 'Please enter a valid phone number: 123 456 7890.';
+    }
+    if (!FirestoreVariables.isValidPassword(passwordController.text, confirmPasswordController.text)) {
+      return 'Passwords must match and follow: minimum of 6 characters: 1 uppercase, 1 lowercase, 1 number';
+    }
+
+    // Add to database
+    // await Future.delayed(Duration(seconds: 5));
+    await FirestoreVariables.accountCollection.add(
+        {'firstName': first,
+          'lastName': last,
+          'email': email,
+          'phone': phone,
+          'password': password,
+          /*'role': roleController.text.trim()*/});
+    print("Adding account to database");
+
+    return null; // If successful, check for null
   }
 
   @override
@@ -239,8 +259,9 @@ class RegisterScreen extends StatelessWidget {
                       SizedBox(height: 20,),
                       ElevatedButton(
                         onPressed: () async {
-                          bool complete = await addAccount();
-                          if (complete) {
+                          String? error = await addAccount();
+                          if (error == null) {
+                            // Successful registration
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -248,7 +269,7 @@ class RegisterScreen extends StatelessWidget {
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Invalid Input"))
+                                SnackBar(content: Text(error))
                             );
                           }
                         },
