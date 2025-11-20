@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
+import 'package:luxury_chauffeur/start_screen.dart';
 
 void main() {
   runApp(MySplashPageApp());
@@ -25,6 +26,21 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+
+  @override
+  void initState() {
+
+    _waitThenNavigate();
+    super.initState();
+  }
+
+  void _waitThenNavigate() async {
+    await Future.delayed(Duration(seconds: 3));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => StartScreen())
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
