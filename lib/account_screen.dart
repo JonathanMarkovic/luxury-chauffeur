@@ -5,18 +5,18 @@ import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/firestore_variables.dart';
 import 'package:luxury_chauffeur/login_screen.dart';
 
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(
-//       options: FirebaseOptions(
-//           apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
-//           appId: "698535253878",
-//           messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
-//           projectId: "lux-rides-6312b"
-//       )
-//   );
-//   runApp(MyApp());
-// }
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
+          appId: "698535253878",
+          messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
+          projectId: "lux-rides-6312b"
+      )
+  );
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -105,10 +105,11 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     super.initState();
-    // fetchUser(widget.email);
+
+    fetchUser(widget.email);
 
     // Test Code
-    fetchUser("bob.robert@gmail.com");
+    // fetchUser("bob.robert@gmail.com");
     // fetchUser("bob.test@gmail.com");
   }
 

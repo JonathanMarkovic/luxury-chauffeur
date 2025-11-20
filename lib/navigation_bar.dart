@@ -27,18 +27,33 @@ class BottomNavigationBarExample extends StatefulWidget {
 
 class _BottomNavigationBarExampleState extends State<BottomNavigationBarExample> {
   int _selectedIndex = 0;
+  String accountEmail = '';
+  List<Widget> _widgetOptions = [];
   static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    NotificationScreen(),
-    CarsScreen(),
-    ReservationScreen(),
-    AccountScreen(email: '',)
-  ];
+  // static List<Widget> _widgetOptions = <Widget>[
+  //   NotificationScreen(),
+  //   CarsScreen(),
+  //   ReservationScreen(),
+  //   AccountScreen(email: accountEmail,)
+  // ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    accountEmail = widget.email;
+    _widgetOptions = <Widget>[
+      NotificationScreen(),
+      CarsScreen(),
+      ReservationScreen(),
+      AccountScreen(email: accountEmail,)
+    ];
+
+    super.initState();
   }
 
   @override
