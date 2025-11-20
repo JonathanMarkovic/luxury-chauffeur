@@ -13,7 +13,19 @@ Future<void> main() async {
           projectId: "lux-rides-6312b"
       )
   );
-  runApp(StartScreen());
+  runApp(MyStartScreenApp());
+}
+
+class MyStartScreenApp extends StatelessWidget {
+  const MyStartScreenApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: StartScreen(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
 }
 
 class StartScreen extends StatefulWidget {
