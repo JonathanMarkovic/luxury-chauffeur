@@ -55,14 +55,14 @@ class FirestoreVariables {
       if (emailPattern.hasMatch(email)) {
         email = email.toLowerCase();
         try {
-          final QuerySnapshot querySnapshot = await FirestoreVariables
-              .accountCollection
-              .where('email', isEqualTo: email).limit(1).get();
+          // final QuerySnapshot querySnapshot = await FirestoreVariables
+          //     .accountCollection
+          //     .where('email', isEqualTo: email).limit(1).get();
           // print('////////////////////////////////////////////////////////');
           // print(querySnapshot);
           // print('////////////////////////////////////////////////////////');
 
-          if (querySnapshot.docs.isNotEmpty) {
+          if (await exists(accountCollection, 'email', email)) {
             return false;
           } else {
             return true;
@@ -110,5 +110,14 @@ class FirestoreVariables {
       }
     }
     return false;
+  }
+
+  /// Checks if the field exists
+  static Future<bool> exists(CollectionReference collection, String fieldName, fieldValue) async {
+    QuerySnapshot snapshot = await collection
+        .where(fieldName, isEqualTo: fieldValue)
+        .limit(1).get();
+
+    return snapshot.docs.isNotEmpty;
   }
 }

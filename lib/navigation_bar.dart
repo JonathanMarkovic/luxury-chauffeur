@@ -12,12 +12,14 @@ class BottomNavigationBarExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: BottomNavigationBarExample(), debugShowCheckedModeBanner: false,);
+    return const MaterialApp(home: BottomNavigationBarExample(email: ''), debugShowCheckedModeBanner: false,);
   }
 }
 
 class BottomNavigationBarExample extends StatefulWidget {
-  const BottomNavigationBarExample({super.key});
+  const BottomNavigationBarExample({super.key, required this.email});
+
+  final String email;
 
   @override
   State<BottomNavigationBarExample> createState() => _BottomNavigationBarExampleState();

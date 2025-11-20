@@ -46,7 +46,8 @@ class MyApp extends StatelessWidget {
         '/notification_screen' : (context) => NotificationScreen(),
         '/login_screen' : (context) => LoginScreen(),
         '/cars_screen' : (context) => CarsScreen(),
-        '/account_screen' : (context) => AccountScreen(email: '')
+        '/account_screen' : (context) => AccountScreen(email: ''),
+        '/nac_bar' : (context) => BottomNavigationBarExample(email: '')
       },
       home: const MyHomePage(title: 'Flutter Demo Home Page Testing1 Testing2 Testing3'),
     );

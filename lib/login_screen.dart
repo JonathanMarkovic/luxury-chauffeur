@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/main.dart';
 
 import 'firestore_variables.dart';
+import 'navigation_bar.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +36,49 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  /// Validates the login
+  Future<bool> isValidLogin(context) async {
+    if (await FirestoreVariables.exists(FirestoreVariables.accountCollection,
+        'email', _emailController.text.toLowerCase().trim())) {
+      return fetchUser(_emailController.text);
+    }
+    return false;
+  }
+
+  /// Fetches the current user's information from the firestore database
+  Future<bool> fetchUser(String email) async {
+    email = email.toLowerCase();
+    try {
+      final QuerySnapshot querySnapshot = await FirestoreVariables.accountCollection
+          .where('email', isEqualTo: email).limit(1).get();
+      // print('////////////////////////////////////////////////////////');
+      // print(querySnapshot);
+      // print('////////////////////////////////////////////////////////');
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot docSnapshot = querySnapshot.docs.first;
+        // print('////////////////////////////////////////////////////////');
+        // print(docSnapshot.id);
+        // print('////////////////////////////////////////////////////////');
+
+        //This is the id of the object in the firestore collection
+        final Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('email')) {
+          if (_passwordController.text.trim() == data['password']) {
+            return true;
+          }
+          return false;
+        }
+
+      }
+    } catch (e) {
+      print("Error: $e");
+      return false;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,11 +103,23 @@ class LoginScreen extends StatelessWidget {
                         ),
                         TextField(
                           controller: _passwordController,
+                          obscureText: true,
                           decoration: InputDecoration(labelText: 'Password'),
                         ),
                         SizedBox(height: 20,),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            if (await isValidLogin(context)) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => BottomNavigationBarExample(email: _emailController.text.trim()))
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Invalid Login"))
+                              );
+                            }
+                          },
                           child: Text('Login', style: TextStyle(fontSize: 18),),
                           style: ButtonStyle(
                               backgroundColor: WidgetStateProperty.all(AppColors.darkBackground),
@@ -114,7 +171,7 @@ class RegisterScreen extends StatelessWidget {
     // // print(FirestoreVariables.isValidRole(roleController.text));
     // print(FirestoreVariables.isValidPassword(passwordController.text, confirmPasswordController.text));
     // print('///////////////////////////////////////////////////////////');
-    
+
     if (FirestoreVariables.isValidName(firstNameController.text)
         && FirestoreVariables.isValidName(lastNameController.text)
         && await FirestoreVariables.isValidEmail(emailController.text)
