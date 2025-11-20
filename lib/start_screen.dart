@@ -1,8 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/login_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
+          appId: "698535253878",
+          messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
+          projectId: "lux-rides-6312b"
+      )
+  );
   runApp(MyStartScreenApp());
 }
 
