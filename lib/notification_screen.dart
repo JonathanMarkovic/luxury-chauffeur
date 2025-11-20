@@ -9,81 +9,61 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
+  String? _email;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
-      appBar: AppBar(
         backgroundColor: AppColors.darkBackground,
-        centerTitle: true,
-        title: Text('Notifications', style: TextStyle(color: Colors.white, fontSize: 30),),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-            padding: EdgeInsets.all(20),
-            child:
-            Column(
-              children: [
-                Card(
-                  child: ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
-                    trailing: Column(
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.black,)
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
-                    trailing: Column(
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.black,)
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
-                    trailing: Column(
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.black,)
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    title: Text('Title Placeholder', style: TextStyle(color: Colors.black),),
-                    subtitle: Text('Subtitle Placeholder', style: TextStyle(color: AppColors.darkBackground),),
-                    trailing: Column(
-                      children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.expand_more, color: Colors.black,)
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            )
+        appBar: AppBar(
+          backgroundColor: AppColors.darkBackground,
+          centerTitle: true,
+          title: Text('Notifications',
+            style: TextStyle(color: Colors.white, fontSize: 30),),
         ),
-      )
+        body: SingleChildScrollView(
+          child: Padding(
+              padding: EdgeInsets.all(20),
+              child:
+              Column(
+                children: [
+                  _expandableNotifWidget(
+                    '$_email', 'Title Placeholder', 'Subtitle Placeholder'
+                  ),
+                  _expandableNotifWidget(
+                    '$_email', 'Title Placeholder', 'Subtitle Placeholder'
+                  ),
+                  _expandableNotifWidget(
+                    '$_email', 'Title Placeholder', 'Subtitle Placeholder'
+                  ),
+                  _expandableNotifWidget(
+                    '$_email', 'Title Placeholder', 'Subtitle Placeholder'
+                  ),
+                  _expandableNotifWidget(
+                    '$_email', 'Title Placeholder', 'Subtitle Placeholder'
+                  ),
+                ],
+              )
+          ),
+        )
+    );
+  }
+
+  Widget _expandableNotifWidget(String email, String title, String message) {
+    return Card(
+      child: ExpansionTile(
+        title: Text(
+          title,
+        ),
+        children: [
+          ListTile(
+            subtitle: Text(
+              "$message",
+              style: TextStyle(color: AppColors.darkBackground),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
