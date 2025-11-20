@@ -30,7 +30,7 @@ class _BottomNavigationBarExampleState extends State<BottomNavigationBarExample>
     NotificationScreen(),
     CarsScreen(),
     ReservationScreen(),
-    AccountScreen()
+    AccountScreen(email: '',)
   ];
 
   void _onItemTapped(int index) {

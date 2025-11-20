@@ -1,8 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:luxury_chauffeur/account.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
+import 'package:luxury_chauffeur/firestore_variables.dart';
 import 'package:luxury_chauffeur/login_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: FirebaseOptions(
+          apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
+          appId: "698535253878",
+          messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
+          projectId: "lux-rides-6312b"
+      )
+  );
   runApp(MyApp());
 }
 
@@ -11,22 +24,70 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: AccountScreen(),
+    return MaterialApp(
+      home: AccountScreen(email: ''),
     );
   }
 }
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key});
+  const AccountScreen({super.key, required this.email});
+
+  final String email;
+
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+
+  String firstName = '';
+  String lastName = '';
+  String phone = '';
+  String role = '';
+
+  Future<void> fetchUser(String email) async {
+    try {
+      final QuerySnapshot querySnapshot = await FirestoreVariables.accountCollection
+          .where('email', isEqualTo: email).limit(1).get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final DocumentSnapshot docSnapshot = querySnapshot.docs.first;
+        final Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+
+        if (data != null && data.containsKey('email')) {
+          print('////////////////////////////////////////////////////////');
+          print(data);
+          print('////////////////////////////////////////////////////////');
+          setState(() {
+
+          firstName = data['firstName'] ?? '';
+          lastName = data['lastName'] ?? '';
+          phone = data['phone'] ?? '';
+          role = data['role'] ?? '';
+          });
+
+        }
+      }
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // fetchUser(widget.email);
+
+    // Test Code
+    fetchUser("bob.robert@gmail.com");
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
@@ -54,19 +115,19 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       ListTile(
                         title: Text('First Name'),
-                        trailing: Text('Get from database'),
+                        trailing: Text('${firstName}'),
                       ),
                       ListTile(
                         title: Text('Last Name'),
-                        trailing: Text('Get from database'),
+                        trailing: Text('${lastName}'),
                       ),
                       ListTile(
                         title: Text('Email'),
-                        trailing: Text('Get from database'),
+                        trailing: Text('${widget.email}'),
                       ),
                       ListTile(
                         title: Text('Phone Number'),
-                        trailing: Text('Get from database'),
+                        trailing: Text('${phone}'),
                       )
                     ],
                   ),

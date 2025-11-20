@@ -18,6 +18,7 @@ import 'package:luxury_chauffeur/start_screen.dart';
 import 'account_screen.dart';
 
 void main() async {
+  //This will check that everything is ready for the application to run
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: FirebaseOptions(
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
         '/notification_screen' : (context) => NotificationScreen(),
         '/login_screen' : (context) => LoginScreen(),
         '/cars_screen' : (context) => CarsScreen(),
-        '/account_screen' : (context) => AccountScreen()
+        '/account_screen' : (context) => AccountScreen(email: '')
       },
       home: const MyHomePage(title: 'Flutter Demo Home Page Testing1 Testing2 Testing3'),
     );
