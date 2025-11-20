@@ -3,6 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// This class contains all necessary information for the firestore database, and
+/// any functions concerning parts of the database such as checking for valid
+/// inputs.
 class FirestoreVariables {
   // Firestore reference(instance)
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -30,4 +33,74 @@ class FirestoreVariables {
   // Checks for a password with min 6 characters 1 uppercase 1 lowercase 1 number
   static final passwordPattern =
   RegExp(r'/^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$/');
+
+
+  /**
+   * Checks if the given phone number is valid
+   * Number should be typed with no special characters and spaces in between sections
+   * ex: 514 123 1234
+   */
+  static bool isValidPhone(String phone) {
+    if (phone.isNotEmpty) {
+      if (phonePattern.hasMatch(phone)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Checks if the given email is valid
+   */
+  static bool isValidEmail(String email) {
+    if (email.isNotEmpty) {
+      if (emailPattern.hasMatch(email)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Checks for a valid password by comparing with the regex
+   * Also checks if the password matches the password confirmation
+   */
+  static bool isValidPassword(String password, String confirmPassword) {
+    if (password.isNotEmpty && confirmPassword.isNotEmpty) {
+      if (!passwordPattern.hasMatch(password)) {
+        return false;
+      } else if (password.compareTo(confirmPassword) != 0) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Checks if the given name is valid
+   */
+  static bool isValidName(String name) {
+    if (name.isNotEmpty) {
+      if (!namePattern.hasMatch(name)) {
+        return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Checks if the given role is valid
+   */
+  static bool isValidRole(String role) {
+    if (role.isNotEmpty) {
+      if (role.toLowerCase() == 'customer' || role.toLowerCase() == 'admin') {
+        return true;
+      }
+    }
+    return false;
+  }
 }

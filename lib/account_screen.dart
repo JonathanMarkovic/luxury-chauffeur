@@ -1,23 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:luxury_chauffeur/account.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/firestore_variables.dart';
 import 'package:luxury_chauffeur/login_screen.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: FirebaseOptions(
-          apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
-          appId: "698535253878",
-          messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
-          projectId: "lux-rides-6312b"
-      )
-  );
-  runApp(MyApp());
-}
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(
+//       options: FirebaseOptions(
+//           apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
+//           appId: "698535253878",
+//           messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
+//           projectId: "lux-rides-6312b"
+//       )
+//   );
+//   runApp(MyApp());
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -35,7 +34,6 @@ class AccountScreen extends StatefulWidget {
 
   final String email;
 
-
   @override
   State<AccountScreen> createState() => _AccountScreenState();
 }
@@ -43,29 +41,46 @@ class AccountScreen extends StatefulWidget {
 class _AccountScreenState extends State<AccountScreen> {
 
   String firstName = '';
+  String email = '';
   String lastName = '';
   String phone = '';
   String role = '';
+  String id = '';
 
+  /// Fetches the current user's information from the firestore database
   Future<void> fetchUser(String email) async {
+    email = email.toLowerCase();
     try {
       final QuerySnapshot querySnapshot = await FirestoreVariables.accountCollection
           .where('email', isEqualTo: email).limit(1).get();
+      // print('////////////////////////////////////////////////////////');
+      // print(querySnapshot);
+      // print('////////////////////////////////////////////////////////');
 
       if (querySnapshot.docs.isNotEmpty) {
         final DocumentSnapshot docSnapshot = querySnapshot.docs.first;
+        // print('////////////////////////////////////////////////////////');
+        // print(docSnapshot.id);
+        // print('////////////////////////////////////////////////////////');
+
+        //This is the id of the object in the firestore collection
+        id = docSnapshot.id;
         final Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
 
         if (data != null && data.containsKey('email')) {
-          print('////////////////////////////////////////////////////////');
-          print(data);
-          print('////////////////////////////////////////////////////////');
+          // print('////////////////////////////////////////////////////////');
+          // print(data);
+          // print('////////////////////////////////////////////////////////');
           setState(() {
 
           firstName = data['firstName'] ?? '';
           lastName = data['lastName'] ?? '';
           phone = data['phone'] ?? '';
           role = data['role'] ?? '';
+          this.email = data['email'] ?? '';
+          // print('////////////////////////////////////////////////////////');
+          // print(email);
+          // print('////////////////////////////////////////////////////////');
           });
 
         }
@@ -76,6 +91,17 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
+  /// Handles the updating of an account
+  Future<void> updateAccount(String id, String newFirstName, String newLastName,
+      String newEmail, String newPhone, String newRole) async {
+    if (FirestoreVariables.isValidName(firstName) && FirestoreVariables.isValidName(lastName)
+    && FirestoreVariables.isValidEmail(email) && FirestoreVariables.isValidPhone(phone)
+    && FirestoreVariables.isValidRole(role)) {
+      await FirestoreVariables.accountCollection.doc(id).update(
+          {'firstName': newFirstName, 'lastName': newLastName, 'email': newEmail,
+          'phone': newPhone, 'role': newRole});
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -83,6 +109,7 @@ class _AccountScreenState extends State<AccountScreen> {
 
     // Test Code
     fetchUser("bob.robert@gmail.com");
+    // fetchUser("bob.test@gmail.com");
   }
 
   @override
@@ -123,7 +150,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       ListTile(
                         title: Text('Email'),
-                        trailing: Text('${widget.email}'),
+                        trailing: Text('${email}'),
                       ),
                       ListTile(
                         title: Text('Phone Number'),
