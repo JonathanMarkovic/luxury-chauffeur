@@ -51,9 +51,9 @@ class FirestoreVariables {
   /// Cannot have repeating emails
   /// emails must be in the format: email@site.com
   static Future<bool> isValidEmail(String email) async {
+    email = email.toLowerCase().trim();
     if (email.isNotEmpty) {
       if (emailPattern.hasMatch(email)) {
-        email = email.toLowerCase();
         try {
           // final QuerySnapshot querySnapshot = await FirestoreVariables
           //     .accountCollection
@@ -63,8 +63,11 @@ class FirestoreVariables {
           // print('////////////////////////////////////////////////////////');
 
           if (await exists(accountCollection, 'email', email)) {
+
+            //if the email exists return false(not valid)
             return false;
           } else {
+            //if the email exists return true(valid)
             return true;
           }
         } catch (e) {
