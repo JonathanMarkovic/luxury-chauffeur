@@ -24,44 +24,32 @@ class _CarsScreenState extends State<CarsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Image(image: AssetImage('assets/jeep.jpg')),
-                    ListTile(
-                      title: Text('Jeep'),
-                      trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
-                    )              ],
-                ),
-              ),
-              Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Image(image: AssetImage('assets/audi.jpg')),
-                    ListTile(
-                      title: Text('Audi'),
-                      trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
-                    )
-                  ],
-                ),
-              ),
-              Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Image(image: AssetImage('assets/range_rover.jpg')),
-                    ListTile(
-                      title: Text('Range Rover'),
-                      trailing: IconButton(onPressed: () {}, icon: Icon(Icons.expand_more)),
-                    )              ],
-                ),
-              )
+              _expandableCarWidget('assets/jeep.jpg', 'Jeep', 'Comfortably Seat 5 passengers and ride in style.', 200),
+              _expandableCarWidget('assets/audi.jpg', 'Audi', 'Comfortably Seat 3 passengers and ride in style.', 150),
+              _expandableCarWidget('assets/range_rover.jpg', 'Range Rover', 'Comfortably Seat 5 passengers and ride in style.', 250),
             ],
           ),
         ),
       )
     );
   }
+}
+
+Widget _expandableCarWidget(String imagePath, String name, String description, double price) {
+  return Card(
+    child: ExpansionTile(
+      title: Image(image: AssetImage(imagePath)),
+      children: [
+        ListTile(
+          title: Text(
+            name,
+          ),
+          trailing: Text('\$ $price / hour'),
+          subtitle: Text(
+            description, style: TextStyle(color: AppColors.darkBackground),
+          ),
+        ),
+      ],
+    ),
+  );
 }
