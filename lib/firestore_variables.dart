@@ -34,10 +34,9 @@ class FirestoreVariables {
   static final passwordPattern =
   RegExp(r'^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$');
 
-  // checks for a postal code in the patter H1G-2A3 or H1G 2A3 or H1G2A3
+  // checks for a postal code in the pattern H1G 2A3 or H1G2A3
   // can be upper or lowercase
-  // leters must be a letter from the list [ABCEGHJ-NPRSTVXY]
-  static final postalCodePattern = RegExp(r'/[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/img');
+  static final postalCodePattern = RegExp(r'^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$');
 
   /// Account Validation Section
 
@@ -150,6 +149,7 @@ class FirestoreVariables {
 
   /// Checks for a valid postal code
   static bool isValidPostalCode(String postalCode) {
+    postalCode = postalCode.trim();
     if (postalCodePattern.hasMatch(postalCode)) {
       return true;
     }
@@ -197,9 +197,12 @@ class FirestoreVariables {
     TimeOfDay targetTime = TimeOfDay.fromDateTime(targetDateTime);
 
     if (await isValidDate(date)) {
-      if (time.compareTo(targetTime) == 1) {
-        return true;
+      if (date.day == DateTime.now().day) {
+        if (time.compareTo(targetTime) == 1) {
+          return true;
+        }
       }
+      return true;
     }
     return false;
   }

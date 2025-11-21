@@ -38,7 +38,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
           ),
         ),
         body: TabBarView(
-          children: <Widget>[BookScreen(), ViewScreen(email: widget.email)],
+          children: <Widget>[BookScreen(email: widget.email), ViewScreen(email: widget.email)],
         ),
       ),
     );
@@ -46,7 +46,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
 }
 
 class BookScreen extends StatefulWidget {
-  const BookScreen({super.key});
+  const BookScreen({super.key, required this.email});
+
+  final String email;
 
   @override
   State<BookScreen> createState() => _BookScreenState();
@@ -66,12 +68,6 @@ class _BookScreenState extends State<BookScreen> {
   String dropoffCity = '';
   String dropoffPostalCode = '';
   String dropoffProvince = '';
-
-  DateTime Date = DateTime.now();
-  TimeOfDay Time = TimeOfDay.now();
-
-  String Car = '';
-  int guestCount = 1;
 
   // Dropdown
   String? _selectedVehicle;
@@ -94,6 +90,76 @@ class _BookScreenState extends State<BookScreen> {
       TextEditingController();
   final TextEditingController _dropoffProvinceController =
       TextEditingController();
+
+  //We should add a clear function to clear all the controllers
+
+  Future<String?> addReservation() async {
+    pickupAddress = _pickupAddressController.text.trim();
+    pickupCity = _pickupCityController.text.trim();
+    pickupPostalCode = _pickupPostalCodeController.text.trim();
+    pickupProvince = _pickupProvinceController.text.trim();
+
+    // Car = _selectedVehicle!;
+    // guestCount = _guestCount;
+    if (!FirestoreVariables.isValidAddress(pickupAddress)) {
+      return "Please enter a valid pickup address";
+    }
+    if (!FirestoreVariables.isValidCity(pickupCity)) {
+      return "Please enter a valid pickup city";
+    }
+    if (!FirestoreVariables.isValidProvince(pickupProvince)) {
+      return "Please enter a valid pickup province";
+    }
+    print(_pickupPostalCodeController.text.codeUnits);
+    print(pickupPostalCode.codeUnits);
+    if (!FirestoreVariables.isValidPostalCode(pickupPostalCode)) {
+      return "Please enter a valid pickup postal code";
+    }
+
+    dropoffAddress = _dropoffAddressController.text.trim();
+    dropoffCity = _dropoffCityController.text.trim();
+    dropoffPostalCode = _dropoffPostalCodeController.text.trim();
+    dropoffProvince = _dropoffProvinceController.text.trim();
+    if (!FirestoreVariables.isValidAddress(dropoffAddress)) {
+      return "Please enter a valid dropoff address";
+    }
+    if (!FirestoreVariables.isValidCity(dropoffCity)) {
+      return "Please enter a valid dropoff city";
+    }
+    if (!FirestoreVariables.isValidPostalCode(dropoffPostalCode)) {
+      return "Please enter a valid dropoff postal code";
+    }
+    if (!FirestoreVariables.isValidProvince(dropoffProvince)) {
+      return "Please enter a valid dropoff province";
+    }
+
+    if (!(await FirestoreVariables.isValidDate(_selectedDate))) {
+      return "Please enter a valid date";
+    }
+
+    if (!(await FirestoreVariables.isValidTime(_selectedDate, _selectedTime))) {
+      return "Please enter a vlid time";
+    }
+
+    print(_selectedTime);
+    await FirestoreVariables.reservationCollection.add({
+      'car': _selectedVehicle,
+      'date': _selectedDate.toString(),
+      'dropoffAddress': dropoffAddress,
+      'dropoffCity': dropoffCity,
+      'dropoffPostalCode': dropoffPostalCode,
+      'dropoffProvince': dropoffProvince,
+      'email': widget.email,
+      'guests': _guestCount,
+      'pickupAddress': pickupAddress,
+      'pickupCity': pickupCity,
+      'pickupPostalCode': pickupPostalCode,
+      'pickupProvince': pickupProvince,
+      'time': "${_selectedTime.hour}:${_selectedTime.minute}"
+    });
+
+    return "Reservation added successfully";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +332,9 @@ class _BookScreenState extends State<BookScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          print(await addReservation());
+                        },
                         child: const Text("Reserve",
                             style: TextStyle(fontSize: 18)),
                       ),
