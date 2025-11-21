@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
+import 'package:luxury_chauffeur/firestore_variables.dart';
 
 class ReservationScreen extends StatefulWidget {
   const ReservationScreen({super.key});
@@ -13,7 +15,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       initialIndex: 1,
-      length: 3,
+      length: 2,
       child: Scaffold(
         backgroundColor: AppColors.darkBackground,
         appBar: AppBar(
@@ -53,6 +55,24 @@ class _BookScreenState extends State<BookScreen> {
   TimeOfDay _selectedTime = TimeOfDay.now();
   int _guestCount = 1;
 
+  String pickupAddress = '';
+  String pickupCity = '';
+  String pickupPostalCode = '';
+  String pickupProvince = '';
+
+  String dropoffAddress = '';
+  String dropoffCity = '';
+  String dropoffPostalCode = '';
+  String dropoffProvince = '';
+
+  DateTime Date = DateTime.now();
+  TimeOfDay Time = TimeOfDay.now();
+
+  String Car = '';
+  int guestCount = 1;
+
+  List<DocumentSnapshot> docSnapshots = [];
+
   // Dropdown
   String? _selectedVehicle;
   final List<String> carOptions = ["Audi", "Jeep", "Range Rover"];
@@ -68,6 +88,31 @@ class _BookScreenState extends State<BookScreen> {
   final TextEditingController _dropoffCityController = TextEditingController();
   final TextEditingController _dropoffPostalCodeController = TextEditingController();
   final TextEditingController _dropoffProvinceController = TextEditingController();
+
+  /// Fetches all reservations belonging to the current user
+  Future<void> fetchReservations(String email) async {
+    final QuerySnapshot querySnapshot = await FirestoreVariables.reservationCollection
+        .where('email', isEqualTo: email).limit(1).get();
+
+    querySnapshot.docs.forEach((doc) {
+      //Testing
+      print("${doc['date']}, "
+          "${doc['email']}, "
+          "${doc['dropoffAddress']}, "
+          "${doc['dropoffCity']}, "
+          "${doc['dropoffPostalCode']}, "
+          "${doc['dropoffProvince']}, "
+          "${doc['pickupAddress']}, "
+          "${doc['pickupCity']}, "
+          "${doc['pickupPostalCode']}, "
+          "${doc['pickupProvince']}, "
+          "${doc['guests']}, "
+          "${doc['time']}, "
+          "${doc['date']}"
+      );
+      docSnapshots.add(doc);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -20,7 +20,7 @@ class FirestoreVariables {
   //Reservation Collection
   static CollectionReference reservationCollection = _firestore.collection('reservations');
 
-  //Regex for firestore data
+  /// Regex for firestore data
   static final namePattern = RegExp(
       r'^(?=[a-zA-Z\s]{2,25}$)(?=[a-zA-Z\s])(?:([\w\s*?])\1?(?!\1))+$');
   static final emailPattern = RegExp(
@@ -34,6 +34,12 @@ class FirestoreVariables {
   static final passwordPattern =
   RegExp(r'^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$');
 
+  // checks for a postal code in the patter H1G-2A3 or H1G 2A3 or H1G2A3
+  // can be upper or lowercase
+  // leters must be a letter from the list [ABCEGHJ-NPRSTVXY]
+  static final postalCodePattern = RegExp(r'/[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ -]?\d[ABCEGHJ-NPRSTV-Z]\d$/img');
+
+  /// Account Validation Section
 
   /// Checks if the given phone number is valid
   /// Number should be typed with no special characters and spaces in between sections
@@ -122,5 +128,112 @@ class FirestoreVariables {
         .limit(1).get();
 
     return snapshot.docs.isNotEmpty;
+  }
+
+  /// Reservation Validation Section
+
+  /// Checks for a valid address
+  static bool isValidAddress(String address) {
+    if (address.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Checks for a valid city
+  static bool isValidCity(String city) {
+    if (city.isNotEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Checks for a valid postal code
+  static bool isValidPostalCode(String postalCode) {
+    if (postalCodePattern.hasMatch(postalCode)) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Checks if the province is valid
+  static bool isValidProvince(String province) {
+    province = province.toLowerCase().trim();
+    if (
+    province == 'alberta' ||
+    province == 'british colombia' ||
+    province == 'manitoba' ||
+    province == 'new brunswick' ||
+    province == 'newfoundland and labrador' ||
+    province == 'nova scotia' ||
+    province == 'ontario' ||
+    province == 'prince edward island' ||
+    province == 'quebec' ||
+    province == 'saskatchewan' ||
+    province == 'northwest territories' ||
+    province == 'nunavut' ||
+    province == 'yukon'
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Checks if the given date is valid(only one reservation per day, and nothing
+  /// in the past
+  static Future<bool> isValidDate(DateTime date) async {
+    if (await exists(carCollection, 'date', date.toString()) ||
+        date.isBefore(DateTime.now())) {
+      return false;
+    }
+    return true;
+  }
+
+  /// Checks if the time is valid(if date is valid then any time is valid
+  static Future<bool> isValidTime(DateTime date, TimeOfDay time) async {
+
+    DateTime current = DateTime.now();
+    DateTime targetDateTime = current.add(Duration(hours: 2));
+    TimeOfDay targetTime = TimeOfDay.fromDateTime(targetDateTime);
+
+    if (await isValidDate(date)) {
+      if (time.compareTo(targetTime) == 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Checks if the selected vehicle is a valid choice from the database
+  static Future<bool> isValidVehicle(String car) async {
+    if (await exists(carCollection, 'name', car)) {
+      return true;
+    }
+    return false;
+  }
+
+  /// Checks if the guest count is a valid amount for that specific car
+  static Future<bool> isValidGuestCount(int count, String car) async {
+    if (count > 0 && count <= await getVehicleCapacity(car)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Gets the capacity of a specific car
+  static Future<int> getVehicleCapacity(String car) async {
+    QuerySnapshot snapshot = await carCollection
+        .where('name', isEqualTo: car)
+        .limit(1).get();
+
+    DocumentSnapshot documentSnapshot = snapshot.docs.first;
+
+    final Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
+    if (data != null) {
+      return data['capacity'];
+    }
+
+    return 0;
   }
 }
