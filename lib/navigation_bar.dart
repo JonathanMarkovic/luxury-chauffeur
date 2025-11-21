@@ -49,7 +49,7 @@ class _BottomNavigationBarExampleState extends State<BottomNavigationBarExample>
     _widgetOptions = <Widget>[
       NotificationScreen(),
       CarsScreen(),
-      ReservationScreen(),
+      ReservationScreen(email: accountEmail),
       AccountScreen(email: accountEmail,)
     ];
 

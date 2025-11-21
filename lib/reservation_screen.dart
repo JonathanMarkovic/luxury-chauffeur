@@ -4,7 +4,9 @@ import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/firestore_variables.dart';
 
 class ReservationScreen extends StatefulWidget {
-  const ReservationScreen({super.key});
+  const ReservationScreen({super.key, required this.email});
+
+  final String email;
 
   @override
   State<ReservationScreen> createState() => _ReservationScreenState();
@@ -21,7 +23,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
         appBar: AppBar(
           backgroundColor: AppColors.darkBackground,
           centerTitle: true,
-          title: Text('Reservations', style: TextStyle(color: Colors.white, fontSize: 30),),
+          title: Text(
+            'Reservations',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
           bottom: const TabBar(
             labelColor: AppColors.accentGoldHover,
             indicatorColor: AppColors.accentGoldHover,
@@ -32,11 +37,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
             ],
           ),
         ),
-        body: const TabBarView(
-          children: <Widget>[
-            BookScreen(),
-            ViewScreen()
-          ],
+        body: TabBarView(
+          children: <Widget>[BookScreen(), ViewScreen(email: widget.email)],
         ),
       ),
     );
@@ -71,226 +73,210 @@ class _BookScreenState extends State<BookScreen> {
   String Car = '';
   int guestCount = 1;
 
-  List<DocumentSnapshot> docSnapshots = [];
-
   // Dropdown
   String? _selectedVehicle;
   final List<String> carOptions = ["Audi", "Jeep", "Range Rover"];
 
   // Pickup controllers
-  final TextEditingController _pickupAddressController = TextEditingController();
+  final TextEditingController _pickupAddressController =
+      TextEditingController();
   final TextEditingController _pickupCityController = TextEditingController();
-  final TextEditingController _pickupPostalCodeController = TextEditingController();
-  final TextEditingController _pickupProvinceController = TextEditingController();
+  final TextEditingController _pickupPostalCodeController =
+      TextEditingController();
+  final TextEditingController _pickupProvinceController =
+      TextEditingController();
 
   // Dropoff controllers
-  final TextEditingController _dropoffAddressController = TextEditingController();
+  final TextEditingController _dropoffAddressController =
+      TextEditingController();
   final TextEditingController _dropoffCityController = TextEditingController();
-  final TextEditingController _dropoffPostalCodeController = TextEditingController();
-  final TextEditingController _dropoffProvinceController = TextEditingController();
-
-  /// Fetches all reservations belonging to the current user
-  Future<void> fetchReservations(String email) async {
-    final QuerySnapshot querySnapshot = await FirestoreVariables.reservationCollection
-        .where('email', isEqualTo: email).limit(1).get();
-
-    querySnapshot.docs.forEach((doc) {
-      //Testing
-      print("${doc['date']}, "
-          "${doc['email']}, "
-          "${doc['dropoffAddress']}, "
-          "${doc['dropoffCity']}, "
-          "${doc['dropoffPostalCode']}, "
-          "${doc['dropoffProvince']}, "
-          "${doc['pickupAddress']}, "
-          "${doc['pickupCity']}, "
-          "${doc['pickupPostalCode']}, "
-          "${doc['pickupProvince']}, "
-          "${doc['guests']}, "
-          "${doc['time']}, "
-          "${doc['date']}"
-      );
-      docSnapshots.add(doc);
-    });
-  }
+  final TextEditingController _dropoffPostalCodeController =
+      TextEditingController();
+  final TextEditingController _dropoffProvinceController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Pickup location
-              _buildSectionLabel("Pickup Location"),
-              _buildInputBox(
-                child: Column(
-                  children: [
-                    _input("Address", _pickupAddressController),
-                    _input("City", _pickupCityController),
-                    _input("Postal Code", _pickupPostalCodeController),
-                    _input("Province", _pickupProvinceController),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Dropoff location
-              _buildSectionLabel("Dropoff Location"),
-              _buildInputBox(
-                child: Column(
-                  children: [
-                    _input("Address", _dropoffAddressController),
-                    _input("City", _dropoffCityController),
-                    _input("Postal Code", _dropoffPostalCodeController),
-                    _input("Province", _dropoffProvinceController),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 28),
-
-              _buildSectionLabel("Select a date"),
-              GestureDetector(
-                onTap: _pickDate,
-                child: _buildInputBox(
-                  child: Row(
+        backgroundColor: AppColors.darkBackground,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Pickup location
+                _buildSectionLabel("Pickup Location"),
+                _buildInputBox(
+                  child: Column(
                     children: [
-                      Icon(Icons.calendar_month, color: AppColors.accentGoldHover),
-                      const SizedBox(width: 12),
-                      Text(
-                        "${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}",
-                        style: const TextStyle(color: AppColors.darkBackground),
-                      ),
+                      _input("Address", _pickupAddressController),
+                      _input("City", _pickupCityController),
+                      _input("Postal Code", _pickupPostalCodeController),
+                      _input("Province", _pickupProvinceController),
                     ],
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              _buildSectionLabel("Select a time"),
-              GestureDetector(
-                onTap: _pickTime,
-                child: _buildInputBox(
-                  child: Row(
+                // Dropoff location
+                _buildSectionLabel("Dropoff Location"),
+                _buildInputBox(
+                  child: Column(
                     children: [
-                      Icon(Icons.access_time, color: AppColors.accentGoldHover),
-                      const SizedBox(width: 12),
-                      Text(
-                        _selectedTime.format(context),
-                        style: const TextStyle(color: AppColors.darkBackground),
-                      ),
+                      _input("Address", _dropoffAddressController),
+                      _input("City", _dropoffCityController),
+                      _input("Postal Code", _dropoffPostalCodeController),
+                      _input("Province", _dropoffProvinceController),
                     ],
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 28),
 
-              // Car dropdown
-              _buildSectionLabel("Vehicle"),
-              _buildInputBox(
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    dropdownColor: Colors.white,
-                    iconEnabledColor: AppColors.accentGoldHover,
-                    style: const TextStyle(color: AppColors.darkBackground),
-                    hint: const Text("Select a car"),
-                    value: _selectedVehicle,
-                    items: carOptions
-                      .map((car) => DropdownMenuItem(
-                        value: car,
-                        child: Text(car),
-                      ))
-                        .toList(),
+                _buildSectionLabel("Select a date"),
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: _buildInputBox(
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_month,
+                            color: AppColors.accentGoldHover),
+                        const SizedBox(width: 12),
+                        Text(
+                          "${_selectedDate.year}-${_selectedDate.month}-${_selectedDate.day}",
+                          style:
+                              const TextStyle(color: AppColors.darkBackground),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                _buildSectionLabel("Select a time"),
+                GestureDetector(
+                  onTap: _pickTime,
+                  child: _buildInputBox(
+                    child: Row(
+                      children: [
+                        Icon(Icons.access_time,
+                            color: AppColors.accentGoldHover),
+                        const SizedBox(width: 12),
+                        Text(
+                          _selectedTime.format(context),
+                          style:
+                              const TextStyle(color: AppColors.darkBackground),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Car dropdown
+                _buildSectionLabel("Vehicle"),
+                _buildInputBox(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      dropdownColor: Colors.white,
+                      iconEnabledColor: AppColors.accentGoldHover,
+                      style: const TextStyle(color: AppColors.darkBackground),
+                      hint: const Text("Select a car"),
+                      value: _selectedVehicle,
+                      items: carOptions
+                          .map((car) => DropdownMenuItem(
+                                value: car,
+                                child: Text(car),
+                              ))
+                          .toList(),
                       onChanged: (value) {
                         setState(() => _selectedVehicle = value);
-                    },
+                      },
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Guest counter
-              _buildSectionLabel("Guests"),
-              _buildInputBox(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // Guest counter
+                _buildSectionLabel("Guests"),
+                _buildInputBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _counterButton(
+                        icon: Icons.remove,
+                        onPressed: () {
+                          setState(() {
+                            if (_guestCount > 1) _guestCount--;
+                          });
+                        },
+                      ),
+                      Text(
+                        "$_guestCount Guest${_guestCount > 1 ? 's' : ''}",
+                        style: const TextStyle(
+                            color: AppColors.darkBackground, fontSize: 16),
+                      ),
+                      _counterButton(
+                        icon: Icons.add,
+                        onPressed: () {
+                          setState(() => _guestCount++);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Cancel and reserve buttons
+                Row(
                   children: [
-                    _counterButton(
-                      icon: Icons.remove,
-                      onPressed: () {
-                        setState(() {
-                          if (_guestCount > 1) _guestCount--;
-                        });
-                      },
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: AppColors.accentGoldHover),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        onPressed: () {},
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: AppColors.accentGoldHover,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
                     ),
-                    Text(
-                      "$_guestCount Guest${_guestCount > 1 ? 's' : ''}",
-                      style: const TextStyle(color: AppColors.darkBackground, fontSize: 16),
-                    ),
-                    _counterButton(
-                      icon: Icons.add,
-                      onPressed: () {
-                        setState(() => _guestCount++);
-                      },
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accentGoldHover,
+                          foregroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        onPressed: () {},
+                        child: const Text("Reserve",
+                            style: TextStyle(fontSize: 18)),
+                      ),
                     ),
                   ],
                 ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Cancel and reserve buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.accentGoldHover),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: () {},
-                      child: Text(
-                        "Cancel",
-                        style: TextStyle(
-                          color: AppColors.accentGoldHover,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.accentGoldHover,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: () {},
-                      child: const Text("Reserve", style: TextStyle(fontSize: 18)),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      )
-    );
+        ));
   }
 
   // Helper widgets
@@ -308,7 +294,8 @@ class _BookScreenState extends State<BookScreen> {
     );
   }
 
-  Widget _counterButton({required IconData icon, required VoidCallback onPressed}) {
+  Widget _counterButton(
+      {required IconData icon, required VoidCallback onPressed}) {
     return Container(
       child: IconButton(
         icon: Icon(icon, color: AppColors.accentGoldHover),
@@ -364,29 +351,80 @@ class _BookScreenState extends State<BookScreen> {
 }
 
 class ViewScreen extends StatefulWidget {
-  const ViewScreen({super.key});
+  const ViewScreen({super.key, required this.email});
+
+  final String email;
 
   @override
   State<ViewScreen> createState() => _ViewScreenState();
 }
 
 class _ViewScreenState extends State<ViewScreen> {
+  List<DocumentSnapshot> docSnapshots = [];
+
+  /// Fetches all reservations belonging to the current user
+  Future<void> fetchReservations(String email) async {
+    final QuerySnapshot querySnapshot = await FirestoreVariables
+        .reservationCollection
+        .where('email', isEqualTo: email)
+        .get();
+
+    querySnapshot.docs.forEach((doc) {
+      //Testing
+      print("${doc['date']}, "
+          "${doc['email']}, "
+          "${doc['dropoffAddress']}, "
+          "${doc['dropoffCity']}, "
+          "${doc['dropoffPostalCode']}, "
+          "${doc['dropoffProvince']}, "
+          "${doc['pickupAddress']}, "
+          "${doc['pickupCity']}, "
+          "${doc['pickupPostalCode']}, "
+          "${doc['pickupProvince']}, "
+          "${doc['guests']}, "
+          "${doc['time']}, "
+          "${doc['date']}");
+      setState(() {
+        docSnapshots.add(doc);
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    fetchReservations(widget.email);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              ListTile(
-                // I can't remember if firebase automatically gives a list tile
-              )
-            ],
-          ),
-        ),
+      body: /*SingleChildScrollView(
+        child:*/
+          Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(children: [
+          Expanded(child: ListView.builder(
+            itemCount: docSnapshots.length,
+            itemBuilder: (context, index) {
+              final Map<String, dynamic>? data =
+                  docSnapshots[index].data() as Map<String, dynamic>?;
+              if (data != null) {
+                print('/////////////////////////////////////////////////////////');
+                print(data);
+                print(docSnapshots.length);
+                print('/////////////////////////////////////////////////////////');
+                return ListTile(
+                  title: Text('${data['date']}, ${data['time']}'),
+                  subtitle: Text(data['car']),
+                  trailing: Text('${data['guests']} guests'),
+                );
+              }
+            },
+          ))
+        ]),
       ),
+      /*),*/
     );
   }
 }
-

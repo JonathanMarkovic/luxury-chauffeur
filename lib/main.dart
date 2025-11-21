@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash' : (context) => SplashPage(),
         '/start_screen' : (context) => StartScreen(),
-        'reservation_screen' : (context) => ReservationScreen(),
+        'reservation_screen' : (context) => ReservationScreen(email: ''),
         '/notification_screen' : (context) => NotificationScreen(),
         '/login_screen' : (context) => LoginScreen(),
         '/cars_screen' : (context) => CarsScreen(),
