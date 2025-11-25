@@ -198,9 +198,9 @@ class FirestoreVariables {
 
     if (await isValidDate(date)) {
       if (date.day == DateTime.now().day) {
-        if (time.compareTo(targetTime) == 1) {
-          return true;
-        }
+        // if (time.compareTo(targetTime) == 1) {
+        //   return true;
+        // }
       }
       return true;
     }

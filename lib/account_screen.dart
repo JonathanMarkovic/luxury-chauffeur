@@ -5,6 +5,8 @@ import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/firestore_variables.dart';
 import 'package:luxury_chauffeur/login_screen.dart';
 
+import 'navigation_bar.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -12,9 +14,7 @@ Future<void> main() async {
           apiKey: "AIzaSyADymL5C8e-mrRILQ4nBL1mLD-QWvRD6Kw",
           appId: "698535253878",
           messagingSenderId: "1:698535253878:android:0fdb02348086e33e61cc57",
-          projectId: "lux-rides-6312b"
-      )
-  );
+          projectId: "lux-rides-6312b"));
   runApp(MyApp());
 }
 
@@ -39,7 +39,6 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-
   String firstName = '';
   String email = '';
   String lastName = '';
@@ -51,8 +50,11 @@ class _AccountScreenState extends State<AccountScreen> {
   Future<void> fetchUser(String email) async {
     email = email.toLowerCase();
     try {
-      final QuerySnapshot querySnapshot = await FirestoreVariables.accountCollection
-          .where('email', isEqualTo: email).limit(1).get();
+      final QuerySnapshot querySnapshot = await FirestoreVariables
+          .accountCollection
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
       // print('////////////////////////////////////////////////////////');
       // print(querySnapshot);
       // print('////////////////////////////////////////////////////////');
@@ -65,24 +67,23 @@ class _AccountScreenState extends State<AccountScreen> {
 
         //This is the id of the object in the firestore collection
         id = docSnapshot.id;
-        final Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
+        final Map<String, dynamic>? data =
+            docSnapshot.data() as Map<String, dynamic>?;
 
         if (data != null && data.containsKey('email')) {
           // print('////////////////////////////////////////////////////////');
           // print(data);
           // print('////////////////////////////////////////////////////////');
           setState(() {
-
-          firstName = data['firstName'] ?? '';
-          lastName = data['lastName'] ?? '';
-          phone = data['phone'] ?? '';
-          role = data['role'] ?? '';
-          this.email = data['email'] ?? '';
-          // print('////////////////////////////////////////////////////////');
-          // print(email);
-          // print('////////////////////////////////////////////////////////');
+            firstName = data['firstName'] ?? '';
+            lastName = data['lastName'] ?? '';
+            phone = data['phone'] ?? '';
+            role = data['role'] ?? '';
+            this.email = data['email'] ?? '';
+            // print('////////////////////////////////////////////////////////');
+            // print(email);
+            // print('////////////////////////////////////////////////////////');
           });
-
         }
       }
     } catch (e) {
@@ -92,16 +93,31 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   /// Handles the updating of an account
-  Future<void> updateAccount(String id, String newFirstName, String newLastName,
+  Future<String> updateAccount(String id, String newFirstName, String newLastName,
       String newEmail, String newPhone, String newRole) async {
-    if (FirestoreVariables.isValidName(firstName) && FirestoreVariables.isValidName(lastName)
-    && await FirestoreVariables.isValidEmail(email) && FirestoreVariables.isValidPhone(phone)
-    && FirestoreVariables.isValidRole(role)) {
-      await FirestoreVariables.accountCollection.doc(id).update(
-          {'firstName': newFirstName, 'lastName': newLastName, 'email': newEmail,
-          'phone': newPhone, 'role': newRole});
+    if (!FirestoreVariables.isValidName(newFirstName)) {
+      return 'Please enter a valid first name.';
     }
+    if (!FirestoreVariables.isValidName(newLastName)) {
+      return 'Please enter a valid last name.';
+    }
+    if (!await FirestoreVariables.isValidEmail(newEmail)) {
+      return 'Email is invalid or already registered.';
+    }
+    if (!FirestoreVariables.isValidPhone(newPhone)) {
+      return 'Please enter a valid phone number: 123 456 7890.';
+    }
+      await FirestoreVariables.accountCollection.doc(id).update({
+        'firstName': newFirstName,
+        'lastName': newLastName,
+        'email': newEmail,
+        'phone': newPhone,
+        'role': newRole
+      });
+
+    return "Success";
   }
+
   @override
   void initState() {
     super.initState();
@@ -115,71 +131,289 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      backgroundColor: AppColors.darkBackground,
-      appBar: AppBar(
         backgroundColor: AppColors.darkBackground,
-        centerTitle: true,
-        title: Text('Account', style: TextStyle(color: Colors.white, fontSize: 30),),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Card(
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      ListTile(
-                        title: Text('Personal Information', style: TextStyle(fontSize: 22),),
-                        trailing: TextButton(
-                          onPressed: () {},
-                          child: Text('Edit', style: TextStyle(fontSize: 18),),
-                        ),
-                      ),
-                      ListTile(
-                        title: Text('First Name'),
-                        trailing: Text('${firstName}'),
-                      ),
-                      ListTile(
-                        title: Text('Last Name'),
-                        trailing: Text('${lastName}'),
-                      ),
-                      ListTile(
-                        title: Text('Email'),
-                        trailing: Text('${email}'),
-                      ),
-                      ListTile(
-                        title: Text('Phone Number'),
-                        trailing: Text('${phone}'),
-                      )
-                    ],
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Logout ', style: TextStyle(fontSize: 18, color: AppColors.darkBackground),),
-                      Icon(Icons.logout, color: AppColors.darkBackground,)
-                    ],
-                  ),
-                  style: ButtonStyle(
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                    fixedSize: WidgetStateProperty.all(Size(120, 30)),
-                    backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
-                  ),
-                ),
-              ],
-            )
-          ],
+        appBar: AppBar(
+          backgroundColor: AppColors.darkBackground,
+          centerTitle: true,
+          title: Text(
+            'Account',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
         ),
-      )
-    );
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Card(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: Text(
+                            'Personal Information',
+                            style: TextStyle(fontSize: 22),
+                          ),
+                          trailing: TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AccountEdit(
+                                          email: email,
+                                          firstName: firstName,
+                                          lastName: lastName,
+                                          phone: phone,
+                                          id: id)));
+                            },
+                            child: Text(
+                              'Edit',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ),
+                        ListTile(
+                          title: Text('First Name'),
+                          trailing: Text('${firstName}'),
+                        ),
+                        ListTile(
+                          title: Text('Last Name'),
+                          trailing: Text('${lastName}'),
+                        ),
+                        ListTile(
+                          title: Text('Email'),
+                          trailing: Text('${email}'),
+                        ),
+                        ListTile(
+                          title: Text('Phone Number'),
+                          trailing: Text('${phone}'),
+                        )
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Logout ',
+                          style: TextStyle(
+                              fontSize: 18, color: AppColors.darkBackground),
+                        ),
+                        Icon(
+                          Icons.logout,
+                          color: AppColors.darkBackground,
+                        )
+                      ],
+                    ),
+                    style: ButtonStyle(
+                      shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                      fixedSize: WidgetStateProperty.all(Size(120, 30)),
+                      backgroundColor:
+                          WidgetStateProperty.all<Color>(Colors.white),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ));
+  }
+}
+
+class AccountEdit extends StatefulWidget {
+  AccountEdit(
+      {super.key,
+      required this.email,
+      required this.firstName,
+      required this.lastName,
+      required this.phone,
+      required this.id});
+
+  final String email;
+  final String firstName;
+  final String lastName;
+  final String phone;
+  final String id;
+
+  @override
+  State<AccountEdit> createState() => _AccountEditState();
+}
+
+class _AccountEditState extends State<AccountEdit> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+
+  String newFirstName = '';
+  String newLastName = '';
+  String newEmail = '';
+  String newPhone = '';
+
+  /// Handles the updating of an account
+  Future<String> updateAccount(String id, String newFirstName, String newLastName, String originalEmail,
+      String newEmail, String newPhone) async {
+    if (!FirestoreVariables.isValidName(newFirstName)) {
+      return 'Please enter a valid first name.';
+    }
+    if (!FirestoreVariables.isValidName(newLastName)) {
+      return 'Please enter a valid last name.';
+    }
+    if (originalEmail.compareTo(newEmail) != 0) {
+      if (!await FirestoreVariables.isValidEmail(newEmail)) {
+        return 'Email is invalid or already registered.';
+      }
+    }
+    if (!FirestoreVariables.isValidPhone(newPhone)) {
+      return 'Please enter a valid phone number: 123 456 7890.';
+    }
+    await FirestoreVariables.accountCollection.doc(id).update({
+      'firstName': newFirstName,
+      'lastName': newLastName,
+      'email': newEmail,
+      'phone': newPhone,
+    });
+
+    return "Success";
+  }
+
+  @override
+  void initState() {
+    emailController.text = widget.email;
+    firstNameController.text = widget.firstName;
+    lastNameController.text = widget.lastName;
+    phoneNumberController.text = widget.phone;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: AppColors.darkBackground,
+        appBar: AppBar(
+          backgroundColor: AppColors.darkBackground,
+          centerTitle: true,
+          title: Text(
+            'Account',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Card(
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ListTile(
+                          title: Text(
+                            'Personal Information',
+                            style: TextStyle(fontSize: 22),
+                          ),
+                          trailing: TextButton(
+                            onPressed: () async {
+                              print(
+                                  "/////////////////////////////////////////////////////////");
+                              print(await updateAccount(
+                                  widget.id,
+                                  firstNameController.text,
+                                  lastNameController.text,
+                                  widget.email,
+                                  emailController.text,
+                                  phoneNumberController.text));
+                              print(
+                                  "/////////////////////////////////////////////////////////");
+
+                              print(
+                                  "/////////////////////////////////////////////////////////");
+                              print(
+                                  "name: ${firstNameController.text.trim()} ${lastNameController.text.trim()}, Email: ${emailController.text.trim()}, Phone: ${phoneNumberController.text.trim()}");
+                              print(
+                                  "/////////////////////////////////////////////////////////");
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => BottomNavigationBarExample(
+                                        email: emailController.text
+                                      )
+                                  )
+                              );
+                            },
+                            child: Text(
+                              'confirm',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Text("First Name: "),
+                            Expanded(
+                              child: TextField(
+                                controller: firstNameController,
+                                onChanged: (value) => newFirstName =
+                                    firstNameController.text.trim(),
+                                textAlign: TextAlign.end,
+                              ),
+                            )
+                          ]),
+                        ),
+                        Flexible(
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Text("Last Name: "),
+                            Expanded(
+                                child: TextField(
+                              controller: lastNameController,
+                              onChanged: (value) =>
+                                  newLastName = lastNameController.text.trim(),
+                              textAlign: TextAlign.end,
+                            ))
+                          ]),
+                        ),
+                        Flexible(
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Text("Email: "),
+                            Expanded(
+                              child: TextField(
+                                controller: emailController,
+                                onChanged: (value) =>
+                                    newEmail = emailController.text.trim(),
+                                textAlign: TextAlign.end,
+                              ),
+                            )
+                          ]),
+                        ),
+                        Flexible(
+                            child:
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                          Text("Phone: "),
+                          Expanded(
+                            child: TextField(
+                              controller: phoneNumberController,
+                              onChanged: (value) =>
+                                  newPhone = phoneNumberController.text.trim(),
+                              textAlign: TextAlign.end,
+                            ),
+                          )
+                        ]))
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ));
   }
 }
