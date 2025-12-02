@@ -136,7 +136,7 @@ class _BookScreenState extends State<BookScreen> {
     }
 
     if (!(await FirestoreVariables.isValidDate(_selectedDate))) {
-      return "Please enter a valid date";
+      return "That date is already taken";
     }
 
     if (!(await FirestoreVariables.isValidTime(_selectedDate, _selectedTime))) {
