@@ -218,6 +218,7 @@ class FirestoreVariables {
   /// Checks if the guest count is a valid amount for that specific car
   static Future<bool> isValidGuestCount(int count, String car) async {
     if (count > 0 && count <= await getVehicleCapacity(car)) {
+      print("capacity ${await getVehicleCapacity(car)}");
       return true;
     }
 
@@ -229,13 +230,17 @@ class FirestoreVariables {
     QuerySnapshot snapshot = await carCollection
         .where('name', isEqualTo: car)
         .limit(1).get();
+    DocumentSnapshot? documentSnapshot = null;
 
-    DocumentSnapshot documentSnapshot = snapshot.docs.first;
-
-    final Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
-    if (data != null) {
-      return data['capacity'];
+    if (snapshot.size > 0) {
+      documentSnapshot = snapshot.docs.first;
+      final Map<String, dynamic>? data = documentSnapshot?.data() as Map<String, dynamic>?;
+      if (data != null) {
+        return data['capacity'];
+      }
     }
+
+
 
     return 0;
   }

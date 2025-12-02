@@ -99,8 +99,6 @@ class _BookScreenState extends State<BookScreen> {
     pickupPostalCode = _pickupPostalCodeController.text.trim();
     pickupProvince = _pickupProvinceController.text.trim();
 
-    // Car = _selectedVehicle!;
-    // guestCount = _guestCount;
     if (!FirestoreVariables.isValidAddress(pickupAddress)) {
       return "Please enter a valid pickup address";
     }
@@ -114,6 +112,10 @@ class _BookScreenState extends State<BookScreen> {
     print(pickupPostalCode.codeUnits);
     if (!FirestoreVariables.isValidPostalCode(pickupPostalCode)) {
       return "Please enter a valid pickup postal code";
+    }
+
+    if (!await FirestoreVariables.isValidGuestCount(_guestCount, _selectedVehicle!)) {
+      return "Please enter a valid guest count";
     }
 
     dropoffAddress = _dropoffAddressController.text.trim();
@@ -138,7 +140,7 @@ class _BookScreenState extends State<BookScreen> {
     }
 
     if (!(await FirestoreVariables.isValidTime(_selectedDate, _selectedTime))) {
-      return "Please enter a vlid time";
+      return "Please enter a valid time";
     }
 
     print(_selectedTime);
@@ -333,7 +335,11 @@ class _BookScreenState extends State<BookScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         onPressed: () async {
-                          print(await addReservation());
+                          String? reservation = await addReservation();
+                          print(reservation);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("$reservation"))
+                          );
                         },
                         child: const Text("Reserve",
                             style: TextStyle(fontSize: 18)),
