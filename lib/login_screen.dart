@@ -110,7 +110,7 @@ class LoginScreen extends StatelessWidget {
                         ElevatedButton(
                           onPressed: () async {
                             if (await isValidLogin(context)) {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(builder: (context) => BottomNavigationBarExample(email: _emailController.text.trim()))
                               );

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/firestore_variables.dart';
 import 'package:luxury_chauffeur/login_screen.dart';
-import 'package:luxury_chauffeur/start_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -162,13 +161,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                        MaterialPageRoute(builder: (context) => StartScreen())
-
-                    );
-                  },
+                  onPressed: () {},
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

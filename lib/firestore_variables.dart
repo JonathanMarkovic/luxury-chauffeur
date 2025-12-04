@@ -11,18 +11,19 @@ class FirestoreVariables {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   //Account Collection
-  static CollectionReference accountCollection = _firestore.collection(
-      'accounts');
+  static CollectionReference accountCollection =
+      _firestore.collection('accounts');
 
   //Car Collection
   static CollectionReference carCollection = _firestore.collection('cars');
 
   //Reservation Collection
-  static CollectionReference reservationCollection = _firestore.collection('reservations');
+  static CollectionReference reservationCollection =
+      _firestore.collection('reservations');
 
   /// Regex for firestore data
-  static final namePattern = RegExp(
-      r'^(?=[a-zA-Z\s]{2,25}$)(?=[a-zA-Z\s])(?:([\w\s*?])\1?(?!\1))+$');
+  static final namePattern =
+      RegExp(r'^(?=[a-zA-Z\s]{2,25}$)(?=[a-zA-Z\s])(?:([\w\s*?])\1?(?!\1))+$');
   static final emailPattern = RegExp(
       r'^([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x22([^\x0d\x22\x5c\x80-\xff]|\x5c[\x00-\x7f])*\x22))*\x40([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d)(\x2e([^\x00-\x20\x22\x28\x29\x2c\x2e\x3a-\x3c\x3e\x40\x5b-\x5d\x7f-\xff]+|\x5b([^\x0d\x5b-\x5d\x80-\xff]|\x5c[\x00-\x7f])*\x5d))*$');
 
@@ -32,11 +33,12 @@ class FirestoreVariables {
 
   // Checks for a password with min 6 characters 1 uppercase 1 lowercase 1 number
   static final passwordPattern =
-  RegExp(r'^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$');
+      RegExp(r'^((?=\S*?[A-Z])(?=\S*?[a-z])(?=\S*?[0-9]).{6,})\S$');
 
   // checks for a postal code in the pattern H1G 2A3 or H1G2A3
   // can be upper or lowercase
-  static final postalCodePattern = RegExp(r'^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$');
+  static final postalCodePattern =
+      RegExp(r'^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$');
 
   /// Account Validation Section
 
@@ -68,7 +70,6 @@ class FirestoreVariables {
           // print('////////////////////////////////////////////////////////');
 
           if (await exists(accountCollection, 'email', email)) {
-
             //if the email exists return false(not valid)
             return false;
           } else {
@@ -121,10 +122,10 @@ class FirestoreVariables {
   }
 
   /// Checks if the field exists
-  static Future<bool> exists(CollectionReference collection, String fieldName, fieldValue) async {
-    QuerySnapshot snapshot = await collection
-        .where(fieldName, isEqualTo: fieldValue)
-        .limit(1).get();
+  static Future<bool> exists(
+      CollectionReference collection, String fieldName, fieldValue) async {
+    QuerySnapshot snapshot =
+        await collection.where(fieldName, isEqualTo: fieldValue).limit(1).get();
 
     return snapshot.docs.isNotEmpty;
   }
@@ -159,21 +160,19 @@ class FirestoreVariables {
   /// Checks if the province is valid
   static bool isValidProvince(String province) {
     province = province.toLowerCase().trim();
-    if (
-    province == 'alberta' ||
-    province == 'british colombia' ||
-    province == 'manitoba' ||
-    province == 'new brunswick' ||
-    province == 'newfoundland and labrador' ||
-    province == 'nova scotia' ||
-    province == 'ontario' ||
-    province == 'prince edward island' ||
-    province == 'quebec' ||
-    province == 'saskatchewan' ||
-    province == 'northwest territories' ||
-    province == 'nunavut' ||
-    province == 'yukon'
-    ) {
+    if (province == 'alberta' ||
+        province == 'british colombia' ||
+        province == 'manitoba' ||
+        province == 'new brunswick' ||
+        province == 'newfoundland and labrador' ||
+        province == 'nova scotia' ||
+        province == 'ontario' ||
+        province == 'prince edward island' ||
+        province == 'quebec' ||
+        province == 'saskatchewan' ||
+        province == 'northwest territories' ||
+        province == 'nunavut' ||
+        province == 'yukon') {
       return true;
     }
     return false;
@@ -191,16 +190,15 @@ class FirestoreVariables {
 
   /// Checks if the time is valid(if date is valid then any time is valid
   static Future<bool> isValidTime(DateTime date, TimeOfDay time) async {
-
     DateTime current = DateTime.now();
     DateTime targetDateTime = current.add(Duration(hours: 2));
     TimeOfDay targetTime = TimeOfDay.fromDateTime(targetDateTime);
 
     if (await isValidDate(date)) {
       if (date.day == DateTime.now().day) {
-        if (time.compareTo(targetTime) == 1) {
-          return true;
-        }
+        // if (time.compareTo(targetTime) == 1) {
+        //   return true;
+        // }
       }
       return true;
     }
@@ -218,6 +216,8 @@ class FirestoreVariables {
   /// Checks if the guest count is a valid amount for that specific car
   static Future<bool> isValidGuestCount(int count, String car) async {
     if (count > 0 && count <= await getVehicleCapacity(car)) {
+      print(count);
+      print("capacity ${await getVehicleCapacity(car)}");
       return true;
     }
 
@@ -226,13 +226,14 @@ class FirestoreVariables {
 
   /// Gets the capacity of a specific car
   static Future<int> getVehicleCapacity(String car) async {
-    QuerySnapshot snapshot = await carCollection
-        .where('name', isEqualTo: car)
-        .limit(1).get();
+    print(car);
+    QuerySnapshot snapshot =
+        await carCollection.where('name', isEqualTo: car.toLowerCase()).limit(1).get();
+    DocumentSnapshot? documentSnapshot = null;
 
-    DocumentSnapshot documentSnapshot = snapshot.docs.first;
-
-    final Map<String, dynamic>? data = documentSnapshot.data() as Map<String, dynamic>?;
+    documentSnapshot = snapshot.docs.first;
+    final Map<String, dynamic>? data =
+        documentSnapshot?.data() as Map<String, dynamic>?;
     if (data != null) {
       return data['capacity'];
     }
