@@ -92,8 +92,27 @@ class _BookScreenState extends State<BookScreen> {
       TextEditingController();
 
   //We should add a clear function to clear all the controllers
+  clear() {
+    _pickupAddressController.clear();
+    _pickupCityController.clear();
+    _pickupPostalCodeController.clear();
+    _pickupProvinceController.clear();
 
-  Future<String?> addReservation() async {
+    _dropoffAddressController.clear();
+    _dropoffCityController.clear();
+    _dropoffPostalCodeController.clear();
+    _dropoffProvinceController.clear();
+
+    _selectedDate = DateTime.now();
+    _selectedTime = TimeOfDay.now();
+
+    _selectedVehicle = null;
+    _guestCount = 1;
+
+    setState(() {});
+  }
+
+  Future<Object> addReservation() async {
     pickupAddress = _pickupAddressController.text.trim();
     pickupCity = _pickupCityController.text.trim();
     pickupPostalCode = _pickupPostalCodeController.text.trim();
@@ -138,7 +157,7 @@ class _BookScreenState extends State<BookScreen> {
     }
 
     if (!(await FirestoreVariables.isValidTime(_selectedDate, _selectedTime))) {
-      return "Please enter a vlid time";
+      return "Please enter a valid time";
     }
 
     print(_selectedTime);
@@ -158,7 +177,14 @@ class _BookScreenState extends State<BookScreen> {
       'time': "${_selectedTime.hour}:${_selectedTime.minute}"
     });
 
-    return "Reservation added successfully";
+    clear();
+
+    // return "Reservation added successfully";
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Reservation added successfully!")
+      )
+    );
   }
 
   @override
@@ -311,7 +337,9 @@ class _BookScreenState extends State<BookScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          clear();
+                        },
                         child: Text(
                           "Cancel",
                           style: TextStyle(
@@ -333,7 +361,7 @@ class _BookScreenState extends State<BookScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         onPressed: () async {
-                          print(await addReservation());
+                          addReservation();
                         },
                         child: const Text("Reserve",
                             style: TextStyle(fontSize: 18)),
@@ -495,4 +523,10 @@ class _ViewScreenState extends State<ViewScreen> {
       /*),*/
     );
   }
+}
+
+Widget _reservationTileWidget(DateTime date, TimeOfDay time, String car, int guests) {
+  return ListTile(
+
+  );
 }
