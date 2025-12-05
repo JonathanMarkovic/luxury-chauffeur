@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:luxury_chauffeur/app_colors.dart';
 import 'package:luxury_chauffeur/firestore_variables.dart';
+import 'package:luxury_chauffeur/helper_functions.dart';
 
 class ReservationScreen extends StatefulWidget {
   const ReservationScreen({super.key, required this.email});
@@ -46,9 +47,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
 }
 
 class BookScreen extends StatefulWidget {
-  const BookScreen({super.key, required this.email});
+  const BookScreen({super.key, required this.email, this.editingDoc});
 
   final String email;
+  final DocumentSnapshot? editingDoc;
 
   @override
   State<BookScreen> createState() => _BookScreenState();
@@ -91,81 +93,134 @@ class _BookScreenState extends State<BookScreen> {
   final TextEditingController _dropoffProvinceController =
       TextEditingController();
 
-  //We should add a clear function to clear all the controllers
+  // Editing
+  bool isEditing = false;
+  String editingId = "";
 
-  Future<String?> addReservation() async {
-    pickupAddress = _pickupAddressController.text.trim();
-    pickupCity = _pickupCityController.text.trim();
-    pickupPostalCode = _pickupPostalCodeController.text.trim();
-    pickupProvince = _pickupProvinceController.text.trim();
+  void clear() {
+    _pickupAddressController.clear();
+    _pickupCityController.clear();
+  }
 
-    // Car = _selectedVehicle!;
-    // guestCount = _guestCount;
+  Future<void> addReservation() async {
+    final pickupAddress = _pickupAddressController.text.trim();
+    final dropoffAddress = _dropoffAddressController.text.trim();
+
+    if (pickupAddress.isEmpty || dropoffAddress.isEmpty || _selectedVehicle == null) {
+      HelperFunctions.showSnackBar(context, "Please fill in all fields");
+    }
+
     if (!FirestoreVariables.isValidAddress(pickupAddress)) {
-      return "Please enter a valid pickup address";
+      HelperFunctions.showSnackBar(context, "Please enter a valid pickup address");
+      return;
     }
-    if (!FirestoreVariables.isValidCity(pickupCity)) {
-      return "Please enter a valid pickup city";
-    }
-    if (!FirestoreVariables.isValidProvince(pickupProvince)) {
-      return "Please enter a valid pickup province";
-    }
-    print(_pickupPostalCodeController.text.codeUnits);
-    print(pickupPostalCode.codeUnits);
-    if (!FirestoreVariables.isValidPostalCode(pickupPostalCode)) {
-      return "Please enter a valid pickup postal code";
-    }
-
-    dropoffAddress = _dropoffAddressController.text.trim();
-    dropoffCity = _dropoffCityController.text.trim();
-    dropoffPostalCode = _dropoffPostalCodeController.text.trim();
-    dropoffProvince = _dropoffProvinceController.text.trim();
     if (!FirestoreVariables.isValidAddress(dropoffAddress)) {
-      return "Please enter a valid dropoff address";
+      HelperFunctions.showSnackBar(context, "Please enter a valid drop-off address");
+      return;
     }
-    if (!FirestoreVariables.isValidCity(dropoffCity)) {
-      return "Please enter a valid dropoff city";
+    if (_selectedVehicle == null) {
+      HelperFunctions.showSnackBar(context, "Please select a vehicle");
+      return;
     }
-    if (!FirestoreVariables.isValidPostalCode(dropoffPostalCode)) {
-      return "Please enter a valid dropoff postal code";
-    }
-    if (!FirestoreVariables.isValidProvince(dropoffProvince)) {
-      return "Please enter a valid dropoff province";
-    }
-
     if (!(await FirestoreVariables.isValidDate(_selectedDate))) {
-      return "Please enter a valid date";
+      HelperFunctions.showSnackBar(context, "Please enter a valid date");
+      return;
     }
-
     if (!(await FirestoreVariables.isValidTime(_selectedDate, _selectedTime))) {
-      return "Please enter a vlid time";
+      HelperFunctions.showSnackBar(context, "Please enter a valid time");
+      return;
     }
 
-    print(_selectedTime);
-    await FirestoreVariables.reservationCollection.add({
-      'car': _selectedVehicle,
-      'date': _selectedDate.toString(),
-      'dropoffAddress': dropoffAddress,
-      'dropoffCity': dropoffCity,
-      'dropoffPostalCode': dropoffPostalCode,
-      'dropoffProvince': dropoffProvince,
-      'email': widget.email,
-      'guests': _guestCount,
-      'pickupAddress': pickupAddress,
-      'pickupCity': pickupCity,
-      'pickupPostalCode': pickupPostalCode,
-      'pickupProvince': pickupProvince,
-      'time': "${_selectedTime.hour}:${_selectedTime.minute}"
-    });
+    try {
+      await FirestoreVariables.reservationCollection.add({
+        'car': _selectedVehicle,
+        'date': _selectedDate.toIso8601String(),
+        'dropoffAddress': dropoffAddress,
+        'email': widget.email,
+        'guests': _guestCount,
+        'pickupAddress': pickupAddress,
+        'time': "${_selectedTime.hour.toString().padLeft(2,'0')}:${_selectedTime.minute.toString().padLeft(2,'0')}"
+      });
 
-    return "Reservation added successfully";
+      HelperFunctions.showSnackBar(context, "Reservation added successfully");
+
+      // clear fields
+      _pickupAddressController.clear();
+      _dropoffAddressController.clear();
+      setState(() {
+        _selectedVehicle = null;
+        _guestCount = 1;
+        _selectedDate = DateTime.now();
+        _selectedTime = TimeOfDay.now();
+      });
+
+      // switch to View tab (only works if DefaultTabController is an ancestor)
+      final tabController = DefaultTabController.of(context);
+      if (tabController != null) tabController.animateTo(1);
+
+    } catch (e, st) {
+      print("Failed to add reservation: $e\n$st");
+      HelperFunctions.showSnackBar(context, "Failed to add reservation");
+    }
+  }
+
+  Future<void> _editReservation() async {
+    try {
+      await FirebaseFirestore.instance
+          .collection("reservations")
+          .doc(editingId)
+          .update({
+            'pickupAddress': _pickupAddressController.text.trim(),
+            'dropoffAddress': _dropoffAddressController.text.trim(),
+            'car': _selectedVehicle,
+            'guests': _guestCount,
+            'date': _selectedDate.toIso8601String(),
+            'time': "${_selectedTime.hour.toString().padLeft(2,'0')}:${_selectedTime.minute.toString().padLeft(2,'0')}",
+          });
+
+      HelperFunctions.showSnackBar(context, "Reservation updated successfully");
+
+      final tab = DefaultTabController.of(context);
+      // go back to view tab
+      if (tab != null) tab.animateTo(1);
+    } catch (e) {
+      HelperFunctions.showSnackBar(context, "Failed to update reservation");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.editingDoc != null) {
+      final data = widget.editingDoc!.data() as Map<String, dynamic>;
+
+      isEditing = true;
+      editingId = widget.editingDoc!.id;
+
+      // fill in the fields
+      _pickupAddressController.text = data['pickupAddress'] ?? "";
+      _dropoffAddressController.text = data['dropoffAddress'] ?? "";
+      _selectedVehicle = data['car'];
+      _guestCount = data['guests'] ?? 1;
+      
+      // parse date
+      _selectedDate = DateTime.parse(data['date']);
+      
+      // parse time hh:mm
+      final timeParts = data['time'].split(':');
+      _selectedTime = TimeOfDay(
+        hour: int.parse(timeParts[0]),
+        minute: int.parse(timeParts[1])
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: AppColors.darkBackground,
-        body: SingleChildScrollView(
+    return Container(
+        color: AppColors.darkBackground,
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -177,9 +232,6 @@ class _BookScreenState extends State<BookScreen> {
                   child: Column(
                     children: [
                       _input("Address", _pickupAddressController),
-                      _input("City", _pickupCityController),
-                      _input("Postal Code", _pickupPostalCodeController),
-                      _input("Province", _pickupProvinceController),
                     ],
                   ),
                 ),
@@ -187,14 +239,11 @@ class _BookScreenState extends State<BookScreen> {
                 const SizedBox(height: 20),
 
                 // Dropoff location
-                _buildSectionLabel("Dropoff Location"),
+                _buildSectionLabel("Drop-off Location"),
                 _buildInputBox(
                   child: Column(
                     children: [
                       _input("Address", _dropoffAddressController),
-                      _input("City", _dropoffCityController),
-                      _input("Postal Code", _dropoffPostalCodeController),
-                      _input("Province", _dropoffProvinceController),
                     ],
                   ),
                 ),
@@ -333,10 +382,15 @@ class _BookScreenState extends State<BookScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         onPressed: () async {
-                          print(await addReservation());
+                          if (isEditing) {
+                            await _editReservation();
+                          }
+                          else {
+                            await addReservation();
+                          }
                         },
-                        child: const Text("Reserve",
-                            style: TextStyle(fontSize: 18)),
+                        child: Text(isEditing ? "Save" : "Reserve",
+                          style: TextStyle(fontSize: 18)),
                       ),
                     ),
                   ],
@@ -398,23 +452,29 @@ class _BookScreenState extends State<BookScreen> {
   }
 
   Future<void> _pickDate() async {
+    final now = DateTime.now();
+
     final picked = await showDatePicker(
       context: context,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: _selectedDate,
+      initialDate: now,
+      firstDate: now.subtract(const Duration(days: 1)),
+      lastDate: DateTime(now.year + 1),
     );
 
-    if (picked != null) setState(() => _selectedDate = picked);
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
   }
 
   Future<void> _pickTime() async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: _selectedTime,
+      initialTime: TimeOfDay.now(),
     );
 
-    if (picked != null) setState(() => _selectedTime = picked);
+    if (picked != null) {
+      setState(() => _selectedTime = picked);
+    }
   }
 }
 
@@ -430,33 +490,76 @@ class ViewScreen extends StatefulWidget {
 class _ViewScreenState extends State<ViewScreen> {
   List<DocumentSnapshot> docSnapshots = [];
 
-  /// Fetches all reservations belonging to the current user
   Future<void> fetchReservations(String email) async {
-    final QuerySnapshot querySnapshot = await FirestoreVariables
-        .reservationCollection
-        .where('email', isEqualTo: email)
-        .get();
+    try {
+      docSnapshots.clear();
+      final QuerySnapshot querySnapshot = await FirestoreVariables
+          .reservationCollection
+          .where('email', isEqualTo: email)
+          .get();
 
-    querySnapshot.docs.forEach((doc) {
-      //Testing
-      print("${doc['date']}, "
-          "${doc['email']}, "
-          "${doc['dropoffAddress']}, "
-          "${doc['dropoffCity']}, "
-          "${doc['dropoffPostalCode']}, "
-          "${doc['dropoffProvince']}, "
-          "${doc['pickupAddress']}, "
-          "${doc['pickupCity']}, "
-          "${doc['pickupPostalCode']}, "
-          "${doc['pickupProvince']}, "
-          "${doc['guests']}, "
-          "${doc['time']}, "
-          "${doc['date']}");
-      setState(() {
-        docSnapshots.add(doc);
-      });
-    });
+      for (final doc in querySnapshot.docs) {
+        // guard access to fields that may be missing
+        final data = doc.data() as Map<String, dynamic>? ?? {};
+        print("doc ${doc.id}: $data");
+
+        setState(() {
+          docSnapshots.add(doc);
+        });
+      }
+    } catch (e, st) {
+      print("fetchReservations error: $e\n$st");
+      // Show a snackbar if needed — but make sure context is valid
+      if (mounted) HelperFunctions.showSnackBar(context, "Failed to fetch reservations");
+    }
   }
+
+  Future<void> _deleteReservation(String id) async {
+    try {
+      await FirebaseFirestore.instance.collection("reservations").doc(id).delete();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Reservation cancelled successfully"))
+        );
+      }
+
+      await fetchReservations(widget.email);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to delete reservation"))
+      );
+    }
+
+  }
+
+  void _confirmDelete(BuildContext context, String docId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppColors.darkBackground,
+          title: Text("Cancel Reservation", style: TextStyle(color: Colors.white)),
+          content: Text("Are you sure you want to cancel this reservation?",
+              style: TextStyle(color: AppColors.accentGray)),
+          actions: [
+            TextButton(
+              child: Text("No", style: TextStyle(color: AppColors.accentGoldHover)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            TextButton(
+              child: Text("Yes", style: TextStyle(color: Colors.redAccent)),
+              onPressed: () async {
+                Navigator.pop(context);
+                await _deleteReservation(docId);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
   @override
   void initState() {
@@ -466,35 +569,55 @@ class _ViewScreenState extends State<ViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: /*SingleChildScrollView(
-        child:*/
-          Padding(
+    return Container(
+      child: Padding(
         padding: EdgeInsets.all(20),
         child: Column(children: [
-          Expanded(child: ListView.builder(
-            itemCount: docSnapshots.length,
-            itemBuilder: (context, index) {
-              final Map<String, dynamic>? data =
-                  docSnapshots[index].data() as Map<String, dynamic>?;
-              // Turn date into string and remove trailing time
-              final trimmedDate = data?['date'].toString().split(' ')[0];
-              if (data != null) {
-                print('/////////////////////////////////////////////////////////');
-                print(data);
-                print(docSnapshots.length);
-                print('/////////////////////////////////////////////////////////');
+          Expanded(
+            child: ListView.builder(
+              itemCount: docSnapshots.length,
+              itemBuilder: (context, index) {
+                final data = docSnapshots[index].data() as Map<String, dynamic>? ?? {};
+                final trimmedDate = (data['date'] ?? '').toString().split('T')[0];
+                final car = (data['car'] ?? 'No vehicle selected').toString();
+                final time = (data['time'] ?? 'Unknown').toString();
+                final guests = (data['guests'] ?? 0).toString();
+
                 return ListTile(
-                  title: Text('${trimmedDate}, ${data['time']}'),
-                  subtitle: Text(data['car']),
-                  trailing: Text('${data['guests']} guests'),
+                  title: Text('$trimmedDate, $time', style: TextStyle(color: Colors.white)),
+                  subtitle: Text(car, style: TextStyle(color: AppColors.accentGray)),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('$guests guests', style: TextStyle(color: AppColors.accentGray)),
+                      IconButton(
+                        icon: Icon(Icons.edit, color: AppColors.accentGoldHover),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ReservationScreen(
+                                email: widget.email,
+                                // open Book tab with editing data
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: AppColors.accentGoldHover),
+                        onPressed: () {
+                          _confirmDelete(context, docSnapshots[index].id);
+                        },
+                      ),
+                    ],
+                  ),
                 );
               }
-            },
-          ))
+            )
+          )
         ]),
       ),
-      /*),*/
     );
   }
 }
