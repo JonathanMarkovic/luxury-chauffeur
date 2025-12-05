@@ -477,13 +477,15 @@ class _ViewScreenState extends State<ViewScreen> {
             itemBuilder: (context, index) {
               final Map<String, dynamic>? data =
                   docSnapshots[index].data() as Map<String, dynamic>?;
+              // Turn date into string and remove trailing time
+              final trimmedDate = data?['date'].toString().split(' ')[0];
               if (data != null) {
                 print('/////////////////////////////////////////////////////////');
                 print(data);
                 print(docSnapshots.length);
                 print('/////////////////////////////////////////////////////////');
                 return ListTile(
-                  title: Text('${data['date']}, ${data['time']}'),
+                  title: Text('${trimmedDate}, ${data['time']}'),
                   subtitle: Text(data['car']),
                   trailing: Text('${data['guests']} guests'),
                 );
